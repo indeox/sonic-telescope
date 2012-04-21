@@ -38,6 +38,7 @@
 		5511875C1542C7F5007735FE /* MainViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5511875B1542C7F5007735FE /* MainViewController.m */; };
 		5511875E1542C7F5007735FE /* MainViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5511875D1542C7F5007735FE /* MainViewController.xib */; };
 		551187621542C7F5007735FE /* verify.sh in Resources */ = {isa = PBXBuildFile; fileRef = 551187611542C7F5007735FE /* verify.sh */; };
+		551187691542C997007735FE /* www in Resources */ = {isa = PBXBuildFile; fileRef = 551187681542C997007735FE /* www */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -78,6 +79,7 @@
 		5511875D1542C7F5007735FE /* MainViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = MainViewController.xib; path = Classes/MainViewController.xib; sourceTree = "<group>"; };
 		551187601542C7F5007735FE /* README */ = {isa = PBXFileReference; lastKnownFileType = text; name = README; path = Plugins/README; sourceTree = "<group>"; };
 		551187611542C7F5007735FE /* verify.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = verify.sh; sourceTree = "<group>"; };
+		551187681542C997007735FE /* www */ = {isa = PBXFileReference; lastKnownFileType = folder; path = www; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -115,6 +117,7 @@
 		551186FE1542C7F5007735FE = {
 			isa = PBXGroup;
 			children = (
+				551187681542C997007735FE /* www */,
 				5511872A1542C7F5007735FE /* sonictelescope */,
 				5511870F1542C7F5007735FE /* Frameworks */,
 				5511870D1542C7F5007735FE /* Products */,
@@ -329,6 +332,7 @@
 				551187551542C7F5007735FE /* Cordova.plist in Resources */,
 				5511875E1542C7F5007735FE /* MainViewController.xib in Resources */,
 				551187621542C7F5007735FE /* verify.sh in Resources */,
+				551187691542C997007735FE /* www in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -487,7 +491,7 @@
 					/usr/lib/libSystem.B.dylib,
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -517,7 +521,7 @@
 					/usr/lib/libSystem.B.dylib,
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 				VALIDATE_PRODUCT = YES;
 				WRAPPER_EXTENSION = app;
 			};

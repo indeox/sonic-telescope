@@ -2,7 +2,7 @@ var app = {
     
     dom: {},
     userLocation: { lat: 0, lon: 0, heading: 0 },
-    objects:  [{ 
+    objects: [{ 
         name:   'mercury', 
         coords: [21.7, 238.9] 
     }, {
@@ -15,18 +15,7 @@ var app = {
         
         app.locateUser();
         
-        /*var media1 = new Media('/audio/bbc.m4a'),
-            media2 = new Media('/audio/mimpossible.wav'),
-            media3 = new Media('/audio/cosmos201.mp3'),
-            media4 = new Media('/audio/oneplanet.mp3'),
-            media5 = new Media('/audio/swoon.mp3');
-
-        media1.play();    
-        setTimeout(function() { media2.play(); }, 5000);
-        setTimeout(function() { media3.play(); }, 10000);
-        setTimeout(function() { media4.play(); }, 15000);        
-        setTimeout(function() { media5.play(); }, 20000);
-        */
+        app.audio.init();
         
         // Debug only
         app.dom = { 
@@ -35,22 +24,23 @@ var app = {
             beta:     $('#g-beta'),        
             gamma:    $('#g-gamma'),
             gyrodump: $('#g-dump'),
+            objects:  $('#objects'),
             
             lat:      $('#l-lat'),
             lon:      $('#l-lon'),
             heading:  $('#c-heading')
         }
-        var converted = app.convHorToEqu(51, -8.4, 279.9);
-        console.log("c", converted);
-        app.dom.gyrodump.text(converted);
+        //var converted = app.convHorToEqu(51, -8.4, 279.9);
+        //console.log("c", converted);
+        //app.dom.gyrodump.text(converted);
 
         window.addEventListener("deviceorientation", app.handleOrientation);
-        /*navigator.compass.watchHeading(app.handleCompass,
+        navigator.compass.watchHeading(app.handleCompass,
             function() {
                 // Compass error here
             }, 
             { frequency: 500 }
-        );*/
+        );
     },
     
     
@@ -83,9 +73,9 @@ var app = {
     
     handleCompass: function(heading) {
         // Update compass
-        app.location.heading = heading.magneticHeading;
+        app.userLocation.heading = heading.magneticHeading;
         
-        app.dom.heading.text(app.location.heading);
+        app.dom.heading.text(app.userLocation.heading);
     },
     
     findClosestObject: function(orientation) {
@@ -97,12 +87,28 @@ var app = {
             altitude = orientation.beta,
             azimuth  = heading;
     
+    
+        var sin = beta/90;        
+        Audio.setVolume('pulsar', sin);
+    
         var userLocation = [altitude, azimuth];
         //var degrees = app.getDegrees(userLocation, app.objects[0].coords);
+        
+        // Iterate through all the objects
+        /*var output = '';
+        $.each(app.objects, function(index, item) {
+            var degrees = Math.round(app.getDegrees(userLocation, item.coords));
+            output += '<li>' + item.name + ': ' + degrees + '</li>';
+        });
+        app.dom.objects.html(output);
+        */
 
+        
+        
+    
         // Debug
         app.dom.alpha.text(alpha + ' ('+(360-alpha)+')');
-        app.dom.beta.text(beta);
+        app.dom.beta.text(beta + ' ('+sin+')');
         app.dom.gamma.text(gamma);
         
         if (true) {
@@ -112,7 +118,7 @@ var app = {
         }
     },
     
-    function convertHorizontalToEquatorial(latitude, altitude, azimuth) {  
+    convertHorizontalToEquatorial: function(latitude, altitude, azimuth) {  
         var sinD,  
             cosH,  
             HA,
@@ -179,3 +185,8 @@ function degreesToRadians(degrees) {
     return degrees * (Math.PI / 180);
 }    
 
+
+
+
+// Alias to PGLowLatencyAudio
+Audio = PGLowLatencyAudio;

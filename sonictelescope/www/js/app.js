@@ -1,12 +1,14 @@
 var app = {
     
-    location: { lon: 0, lat: 0 },
+    dom: {},
+    location: { lat: 0, lon: 0, heading: 0 },
     objects:  [{ name: 'moon', coords: [123,234] }],
     
 
     init: function() {
         
-        var media1 = new Media('audio/bbc.m4a'),
+        app.locateUser();
+        /*var media1 = new Media('audio/bbc.m4a'),
             media2 = new Media('audio/mimpossible.wav'),
             media3 = new Media('audio/cosmos201.mp3'),
             media4 = new Media('audio/oneplanet.mp3'),
@@ -17,17 +19,40 @@ var app = {
         //setTimeout(function() { media3.play(); }, 10000);
         //setTimeout(function() { media4.play(); }, 15000);        
         //setTimeout(function() { media5.play(); }, 20000);
+        */
         
+        // Debug only
+        app.dom = { 
+            absolute: $('#g-absolute'),
+            alpha:    $('#g-alpha'),
+            beta:     $('#g-beta'),        
+            gamma:    $('#g-gamma'),
+            
+            lat:      $('#l-lat'),
+            lon:      $('#l-lon'),
+            heading:  $('#c-heading')
+        }
         
-        window.addEventListener("deviceorientation", app.handleOrientation); 
-        
-        
+        window.addEventListener("deviceorientation", app.handleOrientation);
+        navigator.compass.watchHeading(app.handleCompass,
+            function() {
+                // Compass error here
+            }, 
+            { frequency: 500 }
+        );
     },
     
     
     locateUser: function() {
         // Get GPS Coordinates    
         // app.location = {}
+        navigator.geolocation.getCurrentPosition(function(position) {
+            app.location.lat = position.coords.latitude;
+            app.location.lon = position.coords.longitude;
+            
+            app.dom.lat.text(app.location.lat);
+            app.dom.lon.text(app.location.lon);            
+        });      
     },
     
     
@@ -40,19 +65,30 @@ var app = {
     
     handleOrientation: function(orientation) {
         // Check if any objects are in range        
-        var objectInView = app.findObjectInRange(orientation);
+        var objectInView = app.findClosestObject(orientation);
         
         if (objectInView) { app.audio.play(objectInView); }
     },
     
+    handleCompass: function(heading) {
+        // Update compass
+        app.location.heading = heading.magneticHeading;
+        
+        app.dom.heading.text(app.location.heading);
+    },
+    
     
     findClosestObject: function(orientation) {
-        var absolute = orientation.absolute,
-            alpha    = orientation.alpha,
-            beta     = orientation.beta,
-            gamma    = orientation.gamma;
+        var alpha    = Math.round(orientation.alpha),
+            beta     = Math.round(orientation.beta),
+            gamma    = Math.round(orientation.gamma);
             
     
+        // Debug
+        app.dom.alpha.text(alpha);
+        app.dom.beta.text(beta);
+        app.dom.gamma.text(gamma);
+        
     
         if (true) {
             return app.objects[0];

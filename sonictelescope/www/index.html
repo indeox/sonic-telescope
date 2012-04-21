@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no;" />
 	<meta charset="utf-8">
 
+    <link rel="stylesheet" href="css/style.css" type="text/css" />		
 
 	<!-- iPad/iPhone specific css below, add after your main css >
 	<link rel="stylesheet" media="only screen and (max-device-width: 1024px)" href="ipad.css" type="text/css" />		
@@ -20,13 +21,10 @@
 
 
 	// If you want to prevent dragging, uncomment this section
-	/*
-	function preventBehavior(e) 
-	{ 
+	function preventBehavior(e) { 
       e.preventDefault(); 
     };
 	document.addEventListener("touchmove", preventBehavior, false);
-	*/
 	
 	/* If you are supporting your own protocol, the var invokeString will contain any arguments to the app launch.
 	see http://iphonedevelopertips.com/cocoa/launching-your-own-application-via-a-custom-url-scheme.html
@@ -57,12 +55,25 @@
     </script>
   </head>
   <body onload="onBodyLoad()">
-	<h1>Hey, it's Cordova!</h1>
-	<p>Don't know how to get started? Check out our <em><a target="_blank" href="http://docs.phonegap.com/en/edge/guide_getting-started_ios_index.md.html#Getting%20Started%20with%20iOS">Getting Started Guide</a></em>
-	<br />
-	<ol>
-		<li>Check your console log for any white-list rejection errors.</li>
-		<li>Add your allowed <strong>hosts</strong> in Cordova.plist/ExternalHosts (wildcards OK, don't enter the URL scheme)</li>
+	<h1>Sonic Telescope</h1>
+    
+    <h2>Compass</h2>
+	<ol id="compass">
+        <li>Heading: <span id="c-heading"></span></li>
+	</ol>    
+    
+    <h2>Gyro</h2>
+	<ol id="gyro">
+        <li>Alpha: <span id="g-alpha"></span></li>
+        <li>Beta: <span id="g-beta"></span></li>
+        <li>Gamma: <span id="g-gamma"></span></li>
 	</ol>
+    
+    <h2>GPS</h2>
+	<ol id="location">
+		<li>Latitude: <span id="l-lat"></span></li>
+        <li>Longitude: <span id="l-lon"></span></li>
+	</ol>    
+    
   </body>
 </html>

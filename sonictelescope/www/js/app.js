@@ -2,7 +2,7 @@ var app = {
     
     dom: {},
     userLocation: { lat: 0, lon: 0, heading: 0 },
-    objects: [{ 
+    celestialObjects: [{ 
         name:   'mercury', 
         coords: [21.7, 238.9] 
     }, {
@@ -18,10 +18,8 @@ var app = {
         // Debug only
         app.dom = { 
             absolute: $('#g-absolute'),
-            alpha:    $('#g-alpha'),
-            beta:     $('#g-beta'),        
-            gamma:    $('#g-gamma'),
-            gyrodump: $('#g-dump'),
+            altitude: $('#g-altitude'),
+            azimut:    $('#g-azimuth'),        
             objects:  $('#objects'),
             lat:      $('#l-lat'),
             lon:      $('#l-lon'),
@@ -77,7 +75,6 @@ var app = {
      * Handle compass events
      */
     handleCompass: function(heading) {
-        // Update compass
         app.userLocation.heading = heading.magneticHeading;
         
         app.dom.heading.text(app.userLocation.heading);
@@ -87,26 +84,32 @@ var app = {
      * Find closest object to user vector.
      */
     findClosestObject: function(orientation) {
-        var alpha    = Math.round(orientation.alpha),
-            beta     = Math.round(orientation.beta),
-            gamma    = Math.round(orientation.gamma),
-            altitude = orientation.beta,
-            azimuth  = heading;
+        var altitude = orientation.beta,
+            azimuth  = app.userLocation.heading;
         
-        var userLocation = [altitude, azimuth];
+        var coords = [altitude, azimuth];
         
-        var degrees = app.getDegrees(userLocation, app.objects[0].coords);
-        var angularSeparation = app.getAngularSeparation(userLocation, app.objects[0].coords);
-    
+        // Loop through list of celestial objects
+        var angularSeparation,
+            threshold = 10,
+            celestialObject;
+        for (var i = 0; i < app.celestialObjects; i++) {
+            // Calculate angular separation between object and user coords, 
+            // if less than x return object
+            var angularSeparation = app.getAngularSeparation(coords, app.celestialObjects[i].coords);
+            
+            if (angularSeparation < threshold) {
+                threshold = angularSeparation;
+                celestialObject = celestialObjects[i];
+            }
+        }
+        
         // Debug
-        app.dom.alpha.text(alpha + ' ('+(360-alpha)+')');
-        app.dom.beta.text(beta + ' ('+sin+')');
-        app.dom.gamma.text(gamma);
-        app.dom.gyrodump.text(degrees);
-        
+        app.dom.altitude.text(altitude);
+        app.dom.azimuth.text(azimuth);
     
-        if (true) {
-            return app.objects[0];
+        if (celestialObject) {
+            return celestialObject;
         } else {
             return false;
         }

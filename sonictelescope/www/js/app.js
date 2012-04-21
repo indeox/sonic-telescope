@@ -30,9 +30,6 @@ var app = {
             lon:      $('#l-lon'),
             heading:  $('#c-heading')
         }
-        //var converted = app.convHorToEqu(51, -8.4, 279.9);
-        //console.log("c", converted);
-        //app.dom.gyrodump.text(converted);
 
         window.addEventListener("deviceorientation", app.handleOrientation);
         navigator.compass.watchHeading(app.handleCompass,
@@ -92,16 +89,7 @@ var app = {
         Audio.setVolume('pulsar', sin);
     
         var userLocation = [altitude, azimuth];
-        //var degrees = app.getDegrees(userLocation, app.objects[0].coords);
-        
-        // Iterate through all the objects
-        /*var output = '';
-        $.each(app.objects, function(index, item) {
-            var degrees = Math.round(app.getDegrees(userLocation, item.coords));
-            output += '<li>' + item.name + ': ' + degrees + '</li>';
-        });
-        app.dom.objects.html(output);
-        */
+        var angularSeparation = app.getAngularSeparation(userLocation, app.objects[0].coords);
 
         
         
@@ -118,7 +106,11 @@ var app = {
         }
     },
     
-    convertHorizontalToEquatorial: function(latitude, altitude, azimuth) {  
+    /**
+     * Convert coordinates from horizontal to equatorial coordinate system.
+     * see http://en.wikipedia.org/wiki/Horizontal_coordinate_system
+     */
+    function convertHorizontalToEquatorial(latitude, altitude, azimuth) {  
         var sinD,  
             cosH,  
             HA,
@@ -143,9 +135,48 @@ var app = {
         
         // Convert to degrees
         declination = radiansToDegrees(declination);
-        HA = HA / 15.0;  
+        HA = HA / 15.0;
         
         return [declination, HA];
+    },    
+    
+    convertHAtoRA : function(lon) {
+        var time = new Date();
+        var year = time.getFullYear(),
+        month = time.getMonth() + 1,
+        day = time.getDate(),
+        hour = time.getHours(),
+        min = time.getMinutes(),
+        sec = time.getSeconds();
+        
+        var dwhole = 367 * y - parseInt(7 * (year + parseInt((month + 9) / 12)) / 4) 
+        + parseInt(275 * month / 9) 
+        + day - 730531.5;
+        var dfrac = (hour + min/60 + sec/3600)/24;
+        var d = dwhole + dfrac
+        var GMST = (280.46061837 + 360.98564736629 * d) % 360;
+        var LMST = (280.46061837 + 360.98564736629 * d + lon) % 360;
+        
+        return [GMST,LST, d];
+    },
+    
+    convertHAtoRA2 : function(lon) {
+        // julian date
+        var jd = 367 * year 
+        - parseInt( 7 * [year + parseInt( [month + 9]/12 )]/4 ) 
+        - parseInt( 3 * [parseInt( [year + (month - 9)/7]/100 ) + 1]/4 ) 
+        + parseInt( 275 * month/9 ) 
+        + day
+        + 1721028.5 
+        + hour/24 
+        + minute/1440 
+        + second/86400;
+        
+        var a = 280.46061837 + 360.98564736629 * jd + 0.000387933*( parseInt(jd/36525.0) )^2 - ( parseInt(jd/36525.0) )^3/38710000;
+        var GMST = a % 360;
+        var LST = (GMST+lon) % 360;
+        
+        return [GMST,LST, a];
     },    
     
     // Get angular separation between to objects

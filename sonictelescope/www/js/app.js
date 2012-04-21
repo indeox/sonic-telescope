@@ -153,22 +153,24 @@ var app = {
      */
     lst : function(lon) {
         var time = new Date();
-        var year = time.getUTCFullYear() - 1,
+        var year = time.getUTCFullYear(),
 			month = time.getMonth() + 1,
 			day = time.getUTCDate(),
 			hour = time.getUTCMinutes(),
 			min = time.getUTCMinutes(),
 			sec = time.getUTCSeconds();
-        
+
+        // days since J2000.0
         var dwhole = 367 * year - parseInt(7 * (year + parseInt((month + 9) / 12)) / 4) 
-        + parseInt(275 * month / 9) 
-        + day - 730531.5;
+        		+ parseInt(275 * month / 9) 
+        		+ day - 730531.5;
         var dfrac = (hour + min/60 + sec/3600)/24;
-        var d = dwhole + dfrac;
-        var GMST = (280.46061837 + 360.98564736629 * d) % 360;
-        var LMST = (280.46061837 + 360.98564736629 * d + lon) % 360;
+        var jd = dwhole + dfrac;
+        console.log(jd);
+        var GMST = (280.46061837 + 360.98564736629 * jd) % 360;
+        var LMST = (280.46061837 + 360.98564736629 * jd + lon) % 360;
         
-        return [GMST,LMST, d];
+        return [GMST,LMST, jd];
     },
 
     lst3 : function(lon)  {
@@ -181,36 +183,37 @@ var app = {
 			min = time.getUTCMinutes(),
 			sec = time.getUTCSeconds();
 			
-		if (month == 1 || month == 2) {
-			year = year - 1;
-			month = month + 12;
+		if (month <= 2) {
+			year--;
+			month += 12;
 		}
 	
-		var a = Math.floor(year/100);
-		var b = 2 - a + Math.floor(a/4);
-	
-		var c = Math.floor(365.25 * year);
 		var d = Math.floor(30.6001 * (month + 1));
 	
 		// days since J2000.0   
-		var jd = b + c + d - 730550.5 + day + (hour + min/60.0 + sec/3600.0)/24.0;
+		var ut = (hour + min/60.0 + sec/3600.0);
+		
+		var jd =  Math.floor(365.25*(year+4716)) + d + day - 13 -1524.5 + ut/24.0;
+
 		
 		var jt   = jd/36525.0; // julian centuries since J2000.0         
 		var GMST = 280.46061837 + 360.98564736629*jd + 0.000387933*jt*jt - jt*jt*jt/38710000;
-		 
-		if( GMST > 0.0 ) {
-			while (GMST > 360.0 ) {
-				GMST -= 360.0;
-			}
-		} else {
-			while (GMST < 0.0) {
-				GMST += 360.0;
-			}
+		
+		//
+		var frac = function(X) {
+ 			X = X - Math.floor(X);
+ 			if (X<0) X = X + 1.0;
+ 			return X;		
 		}
+		var MJD = jd - 2400000.5;		
+		var MJD0 = Math.floor(MJD);
+		var ut = (MJD - MJD0)*24.0;		
+		var t_eph  = (MJD0-51544.5)/36525.0;			
+		var GMST =  6.697374558 + 1.0027379093*ut + (8640184.812866 + (0.093104 - 0.0000062*t_eph)*t_eph)*t_eph/3600.0;
+		var LMST = 24.0 * frac((GMST + lon/15.0)/24.0);
+		//
 			
-		var LST = (GMST+lon);
-			
-		return [GMST, LST, jd];
+		return [GMST, LMST, jd];
     },
     
     // Get angular separation between to objects
@@ -260,6 +263,8 @@ function toRad(a) {
     return a * (Math.PI/180);
 }    
 
+
+PGLowLatencyAudio = {};
 
 
 // Alias to PGLowLatencyAudio

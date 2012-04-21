@@ -2,7 +2,7 @@ var app = {
     
     dom: {},
     userLocation: { lat: 0, lon: 0, heading: 0 },
-    objects: [{ 
+    celestialObjects: [{ 
         name:   'mercury', 
         coords: [21.7, 238.9] 
     }, {
@@ -18,10 +18,8 @@ var app = {
         // Debug only
         app.dom = { 
             absolute: $('#g-absolute'),
-            alpha:    $('#g-alpha'),
-            beta:     $('#g-beta'),        
-            gamma:    $('#g-gamma'),
-            gyrodump: $('#g-dump'),
+            altitude: $('#g-altitude'),
+            azimut    $('#g-azimuth'),        
             objects:  $('#objects'),
             lat:      $('#l-lat'),
             lon:      $('#l-lon'),
@@ -86,26 +84,20 @@ var app = {
      * Find closest object to user vector.
      */
     findClosestObject: function(orientation) {
-        var alpha    = Math.round(orientation.alpha),
-            beta     = Math.round(orientation.beta),
-            gamma    = Math.round(orientation.gamma),
-            altitude = orientation.beta,
+        var altitude = orientation.beta,
             azimuth  = app.userLocation.heading;
         
-        var userLocation = [altitude, azimuth];
+        var coords = [altitude, azimuth];
         
         // Loop through list of celestial objects
+        var angularSeparation;
+        for (var i = 0; i < app.celestialObjects; i++) {
+            var angularSeparation = app.getAngularSeparation(coords, app.celestialObjects[i].coords);
+        }
         
-        
-        var degrees = app.getDegrees(userLocation, app.objects[0].coords);
-        var angularSeparation = app.getAngularSeparation(userLocation, app.objects[0].coords);
-    
         // Debug
-        app.dom.alpha.text(alpha + ' ('+(360-alpha)+')');
-        app.dom.beta.text(beta + ' ('+sin+')');
-        app.dom.gamma.text(gamma);
-        app.dom.gyrodump.text(degrees);
-        
+        app.dom.altitude.text(altitude);
+        app.dom.azimuth.text(azimuth);
     
         if (true) {
             return app.objects[0];

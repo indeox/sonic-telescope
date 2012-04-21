@@ -267,8 +267,6 @@ function toRad(a) {
 }    
 
 
-PGLowLatencyAudio = {};
-
 
 // Alias to PGLowLatencyAudio
 Audio = PGLowLatencyAudio;

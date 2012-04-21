@@ -151,7 +151,7 @@ var app = {
      * http://mysite.verizon.net/res148h4j/javascript/script_clock.html
      * Uses Meeus formula 11.4
      */
-    convertHAtoRA : function(lon) {
+    lst : function(lon) {
         var time = new Date();
         var year = time.getUTCFullYear() - 1,
 			month = time.getMonth() + 1,
@@ -171,7 +171,7 @@ var app = {
         return [GMST,LST, d];
     },
     
-    convertHAtoRA2 : function(lon) {
+    lst2 : function(lon) {
 
         var time = new Date();
         var year = time.getUTCFullYear() - 1,
@@ -201,7 +201,7 @@ var app = {
     },    
     
     
-    convertHAtoRA3 : function(lon)  {
+    lst3 : function(lon)  {
 
     	var time = new Date();
         var year = time.getUTCFullYear() - 1,
@@ -285,6 +285,19 @@ function toRad(a) {
 }    
 
 
+PGLowLatencyAudio = {};
+
+var lat= 51;
+var altitude = 35.6;
+var azimuth = 331.9;
+console.log(app.convertHorizontalToEquatorial(lat, altitude, azimuth));
+
+console.log(app.lst(lat));
+console.log(app.lst2(lat));
+console.log(app.lst3(lat));
+
 // Alias to PGLowLatencyAudio
 Audio = PGLowLatencyAudio;
+
+
 

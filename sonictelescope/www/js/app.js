@@ -19,7 +19,7 @@ var app = {
         app.dom = { 
             absolute: $('#g-absolute'),
             altitude: $('#g-altitude'),
-            azimut:    $('#g-azimuth'),        
+            azimuth:  $('#g-azimuth'),        
             objects:  $('#objects'),
             lat:      $('#l-lat'),
             lon:      $('#l-lon'),
@@ -219,11 +219,14 @@ var app = {
 		return [GMST, LMST, jd];
     },
     
-    // Get angular separation between to objects
+    /**
+     * Calculates angular separation between two points
+     * (ra1, dec1) and (ra2, dec2) using cosine rule. 
+     */
     getAngularSeparation: function(userCoords, celestialCoords) {
-        // Convert coordinates from 
+        // Convert coordinates
         var userCoordsEQ = convertHorizontalToEquatorial(userCoords),
-            celestialCoordsEQ = sdaq	(celestialCoords);
+            celestialCoordsEQ = convertHorizontalToEquatorial(celestialCoords);
     },
     
     //getDegrees: function(lat1, lon1, lat2, long2) {

@@ -191,16 +191,10 @@ var app = {
 			month += 12;
 		}
 	
-		var d = Math.floor(30.6001 * (month + 1));
-	
-		// days since J2000.0   
+		var d = Math.floor(30.6001 * (month + 1));  
 		var ut = (hour + min/60.0 + sec/3600.0);
-		
+		// days since J2000.0
 		var jd =  Math.floor(365.25*(year+4716)) + d + day - 13 -1524.5 + ut/24.0;
-
-		
-		var jt   = jd/36525.0; // julian centuries since J2000.0         
-		var GMST = 280.46061837 + 360.98564736629*jd + 0.000387933*jt*jt - jt*jt*jt/38710000;
 		
 		//
 		var frac = function(X) {
@@ -266,6 +260,23 @@ function toRad(a) {
     return a * (Math.PI/180);
 }    
 
+
+PGLowLatencyAudio = {};
+
+var lat= 51;
+var lon = 0.9;
+var altitude = 35.6;
+var azimuth = 331.9;
+var dha = app.convertHorizontalToEquatorial(lat, altitude, azimuth);
+console.log(app.convertHorizontalToEquatorial(lat, altitude, azimuth)); //        return [declination, HA];
+
+console.log(app.lst(lon));
+console.log(app.lst3(lon));
+while (1) {
+var gmstlmst = app.lst3(lon);
+var ra = dha[1] - gmstlmst[1];
+console.log(gmstlmst, ra);
+}
 
 
 // Alias to PGLowLatencyAudio

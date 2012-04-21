@@ -19,7 +19,7 @@ var app = {
         app.dom = { 
             absolute: $('#g-absolute'),
             altitude: $('#g-altitude'),
-            azimut:    $('#g-azimuth'),        
+            azimuth:  $('#g-azimuth'),        
             objects:  $('#objects'),
             lat:      $('#l-lat'),
             lon:      $('#l-lon'),
@@ -119,10 +119,11 @@ var app = {
      * Convert coordinates from horizontal to equatorial coordinate system.
      * see http://en.wikipedia.org/wiki/Horizontal_coordinate_system
      */
-    convertHorizontalToEquatorial: function(latitude, altitude, azimuth) {  
+    convertHorizontalToEquatorial: function(latitude, longitude, altitude, azimuth) {  
         var sinD,  
             cosH,  
             HA,
+            RA,
             declination;
         
         // Convert to radians
@@ -146,7 +147,9 @@ var app = {
         declination = radiansToDegrees(declination);
         HA = HA / 15.0;
         
-        return [declination, HA];
+        RA = lst3(longitude)[1] - HA;
+        
+        return [RA, declination];
     },    
     
     /*
@@ -213,11 +216,26 @@ var app = {
 		return [GMST, LMST, jd];
     },
     
-    // Get angular separation between to objects
+    /**
+     * Calculates angular separation between two points
+     * (ra1, dec1) and (ra2, dec2) using cosine rule. 
+     */
     getAngularSeparation: function(userCoords, celestialCoords) {
-        // Convert coordinates from 
+        // Convert coordinates
         var userCoordsEQ = convertHorizontalToEquatorial(userCoords),
-            celestialCoordsEQ = sdaq	(celestialCoords);
+            celestialCoordsEQ = convertHorizontalToEquatorial(celestialCoords);
+        
+        ra1 = parseFloat(userCoordsEQ[0]);
+        ra2 = parseFloat(celestialCoordsEQ[0]);
+        dec1 = parseFloat(userCoords[1]);
+        dec2 = parseFloat(celestialCoords[1]);
+        
+        var distance = ra2 - ra1;
+        
+        var cosSep = (Math.sin(degreesToRadians(dec1)) * Math.sin(degreesToRadians(dec2))) +
+        (Math.cos(degreesToRadians(dec1)) * Math.cos(degreesToRadians(dec2)) * Math.cos(degreesToRadians(distance)));
+        
+        return radiansToDegrees(Math.cos(cosSep));
     },
     
     //getDegrees: function(lat1, lon1, lat2, long2) {

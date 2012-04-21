@@ -90,17 +90,26 @@ var app = {
         var coords = [altitude, azimuth];
         
         // Loop through list of celestial objects
-        var angularSeparation;
+        var angularSeparation,
+            threshold = 10,
+            celestialObject;
         for (var i = 0; i < app.celestialObjects; i++) {
+            // Calculate angular separation between object and user coords, 
+            // if less than x return object
             var angularSeparation = app.getAngularSeparation(coords, app.celestialObjects[i].coords);
+            
+            if (angularSeparation < threshold) {
+                threshold = angularSeparation;
+                celestialObject = celestialObjects[i];
+            }
         }
         
         // Debug
         app.dom.altitude.text(altitude);
         app.dom.azimuth.text(azimuth);
     
-        if (true) {
-            return app.objects[0];
+        if (celestialObject) {
+            return celestialObject;
         } else {
             return false;
         }
@@ -252,9 +261,7 @@ function degreesToRadians(degrees) {
     
 function toRad(a) {
     return a * (Math.PI/180);
-}    
-
-
+}
 
 // Alias to PGLowLatencyAudio
 Audio = PGLowLatencyAudio;

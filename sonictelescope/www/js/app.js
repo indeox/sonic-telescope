@@ -160,47 +160,17 @@ var app = {
 			min = time.getUTCMinutes(),
 			sec = time.getUTCSeconds();
         
-        var dwhole = 367 * y - parseInt(7 * (year + parseInt((month + 9) / 12)) / 4) 
+        var dwhole = 367 * year - parseInt(7 * (year + parseInt((month + 9) / 12)) / 4) 
         + parseInt(275 * month / 9) 
         + day - 730531.5;
         var dfrac = (hour + min/60 + sec/3600)/24;
-        var d = dwhole + dfrac
+        var d = dwhole + dfrac;
         var GMST = (280.46061837 + 360.98564736629 * d) % 360;
         var LMST = (280.46061837 + 360.98564736629 * d + lon) % 360;
         
-        return [GMST,LST, d];
+        return [GMST,LMST, d];
     },
-    
-    lst2 : function(lon) {
 
-        var time = new Date();
-        var year = time.getUTCFullYear() - 1,
-			month = time.getMonth() + 1,
-			day = time.getUTCDate(),
-			hour = time.getUTCMinutes(),
-			min = time.getUTCMinutes(),
-			sec = time.getUTCSeconds();
-        
-    
-        // julian date
-        var jd = 367 * year 
-			- parseInt( 7 * [year + parseInt( [month + 9]/12 )]/4 ) 
-			- parseInt( 3 * [parseInt( [year + (month - 9)/7]/100 ) + 1]/4 ) 
-			+ parseInt( 275 * month/9 ) 
-			+ day
-			+ 1721028.5 
-			+ hour/24 
-			+ minute/1440 
-			+ second/86400;
-        
-        var a = 280.46061837 + 360.98564736629 * jd + 0.000387933*( parseInt(jd/36525.0) )^2 - ( parseInt(jd/36525.0) )^3/38710000;
-        var GMST = a % 360;
-        var LST = (GMST+lon) % 360;
-        
-        return [GMST,LST, a];
-    },    
-    
-    
     lst3 : function(lon)  {
 
     	var time = new Date();
@@ -223,7 +193,7 @@ var app = {
 		var d = Math.floor(30.6001 * (month + 1));
 	
 		// days since J2000.0   
-		var jd = b + c + d - 730550.5 + day + (hour + minute/60.0 + second/3600.0)/24.0;
+		var jd = b + c + d - 730550.5 + day + (hour + min/60.0 + sec/3600.0)/24.0;
 		
 		var jt   = jd/36525.0; // julian centuries since J2000.0         
 		var GMST = 280.46061837 + 360.98564736629*jd + 0.000387933*jt*jt - jt*jt*jt/38710000;
@@ -291,16 +261,6 @@ function toRad(a) {
 }    
 
 
-PGLowLatencyAudio = {};
-
-var lat= 51;
-var altitude = 35.6;
-var azimuth = 331.9;
-console.log(app.convertHorizontalToEquatorial(lat, altitude, azimuth));
-
-console.log(app.lst(lat));
-console.log(app.lst2(lat));
-console.log(app.lst3(lat));
 
 // Alias to PGLowLatencyAudio
 Audio = PGLowLatencyAudio;

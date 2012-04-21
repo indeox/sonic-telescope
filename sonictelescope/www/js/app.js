@@ -9,7 +9,7 @@ var app = {
     }, {
         name:   'moon',
         audio:  'moon.mp3',
-        coords: [63, 150]
+        coords: [5.6, 307.7]
     },{
         name:   'vela',
         audio:  'pulsar_vela.mp3',
@@ -94,16 +94,16 @@ var app = {
             azimuth  = app.userLocation.heading;
         
         var coords = [altitude, azimuth];
-        
+
         // Loop through list of celestial objects
         var angularSeparation,
             threshold = 10,
             celestialObject;
-        for (var i = 0; i < app.celestialObjects; i++) {
+        for (var i = 0; i < app.celestialObjects.length; i++) {
             // Calculate angular separation between object and user coords, 
             // if less than x return object
             var angularSeparation = app.getAngularSeparation(coords, app.celestialObjects[i].coords);
-            
+            if (i == 1) { console.log(angularSeparation); }
             if (angularSeparation < threshold) {
                 threshold = angularSeparation;
                 celestialObject = celestialObjects[i];
@@ -131,7 +131,7 @@ var app = {
             HA,
             RA,
             declination;
-        
+ 
         // Convert to radians
         altitude = degreesToRadians(altitude);
         azimuth = degreesToRadians(azimuth);  
@@ -140,7 +140,7 @@ var app = {
         // Calculate declination
         sinD = (Math.sin(altitude) * Math.sin(latitude)) + (Math.cos(altitude) * Math.cos(latitude) * Math.cos(azimuth));  
         declination = Math.asin(sinD);
-        
+    
         // Calculate hour angle
         cosH = ((Math.sin(altitude) - (Math.sin(latitude) * Math.sin(declination))) / (Math.cos(latitude) * Math.cos(declination)));
 
@@ -153,7 +153,7 @@ var app = {
         declination = radiansToDegrees(declination);
         HA = HA / 15.0;
         
-        RA = lst3(longitude)[1] - HA;
+        RA = this.lst3(longitude)[1] - HA;
         
         return [RA, declination];
     },    
@@ -178,7 +178,7 @@ var app = {
         		+ day - 730531.5;
         var dfrac = (hour + min/60 + sec/3600)/24;
         var jd = dwhole + dfrac;
-        console.log(jd);
+
         var GMST = (280.46061837 + 360.98564736629 * jd) % 360;
         var LMST = (280.46061837 + 360.98564736629 * jd + lon) % 360;
         
@@ -234,9 +234,9 @@ var app = {
      */
     getAngularSeparation: function(userCoords, celestialCoords) {
         // Convert coordinates
-        var userCoordsEQ = convertHorizontalToEquatorial(userCoords),
-            celestialCoordsEQ = convertHorizontalToEquatorial(celestialCoords);
-        
+        var userCoordsEQ = this.convertHorizontalToEquatorial(app.userLocation.lat, app.userLocation.lon, userCoords[0], userCoords[1]),
+            celestialCoordsEQ = this.convertHorizontalToEquatorial(app.userLocation.lat, app.userLocation.lon, celestialCoords[0], celestialCoords[1]);
+
         ra1 = parseFloat(userCoordsEQ[0]);
         ra2 = parseFloat(celestialCoordsEQ[0]);
         dec1 = parseFloat(userCoords[1]);

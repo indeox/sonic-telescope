@@ -117,6 +117,43 @@ var app = {
         }
     },
     
+
+    function convertHorizontalToEquatorial(latitude, altitude, azimuth) {  
+        var sinD,  
+            cosH,  
+            HA,
+            declination;
+        
+        // Convert to radians
+        altitude = degreesToRadians(altitude);
+        azimuth = degreesToRadians(azimuth);  
+        latitude = degreesToRadians(latitude);
+        
+        // Calculate declination
+        sinD = (Math.sin(altitude) * Math.sin(latitude)) + (Math.cos(altitude) * Math.cos(latitude) * Math.cos(azimuth));  
+        declination = Math.asin(sinD);
+        
+        // Calculate hour angle
+        cosH = ((Math.sin(altitude) - (Math.sin(latitude) * Math.sin(declination))) / (Math.cos(latitude) * Math.cos(declination)));
+
+        HA = radiansToDegrees(Math.acos(cosH));  
+        if (Math.sin(azimuth) > 0)  {  
+            HA = 360 - HA;  
+        }  
+        
+        // Convert to degrees
+        declination = radiansToDegrees(declination);
+        HA = HA / 15.0;  
+        
+        return [declination, HA];
+    },    
+    
+    // Get angular separation between to objects
+    getAngularSeparation: function(userCoords, celestialCoords) {
+        // Convert coordinates from 
+        var userCoordsEQ = convertHorizontalToEquatorial(userCoords),
+            celestialCoordsEQ = sdaq	(celestialCoords);
+    },
     
     //getDegrees: function(lat1, lon1, lat2, long2) {
     getDegrees: function(userLocation, celestialObject) {
@@ -141,62 +178,50 @@ var app = {
 
         return R * c;
     }
+             
+             
+	convertHAtoRA : function(lon) {
+		var time = new Date();
+		var year = time.getFullYear(),
+			month = time.getMonth() + 1,
+			day = time.getDate(),
+			hour = time.getHours(),
+			min = time.getMinutes(),
+			sec = time.getSeconds();
+				
+		var dwhole = 367 * y - parseInt(7 * (year + parseInt((month + 9) / 12)) / 4) 
+					+ parseInt(275 * month / 9) 
+					+ day - 730531.5;
+		var dfrac = (hour + min/60 + sec/3600)/24;
+		var d = dwhole + dfrac
+		var GMST = (280.46061837 + 360.98564736629 * d) % 360;
+		var LMST = (280.46061837 + 360.98564736629 * d + lon) % 360;
+
+		return [GMST,LST, d];
+	},
+	
+	convertHAtoRA2 : function(lon) {
+		// julian date
+		var jd = 367 * year 
+				- parseInt( 7 * [year + parseInt( [month + 9]/12 )]/4 ) 
+				- parseInt( 3 * [parseInt( [year + (month - 9)/7]/100 ) + 1]/4 ) 
+				+ parseInt( 275 * month/9 ) 
+				+ day
+				+ 1721028.5 
+				+ hour/24 
+				+ minute/1440 
+				+ second/86400;
+		
+		var a = 280.46061837 + 360.98564736629 * jd + 0.000387933*( parseInt(jd/36525.0) )^2 - ( parseInt(jd/36525.0) )^3/38710000;
+		var GMST = a % 360;
+		var LST = (GMST+lon) % 360;
+		
+		return [GMST,LST, a];
+	}
                 
 }    
     
     
-    
-
-// http://www.mathworks.com/matlabcentral/fileexchange/24581-convert-azimuth-and-elevation-to-right-ascension-and-declination
-function convertAltitudeAzimuthDegreesToRightAscensionDeclination(altitude,azimuth,latitude,longitude) {
-
-	var time = new Date();
-	var year = time.getFullYear(),
-		month = time.getMonth() + 1,
-		day = time.getDate(),
-		hour = time.getHours(),
-		min = time.getMinutes(),
-		sec = time.getSeconds();
-	
-	var jd = Math.floor(365.25 * (year + 4716.0)) 
-		+ Math.floor(30.6001 * (month + 1.0))
-		+ 2.0 - Math.floor(year / 100.0)
-		+ Math.floor(Math.floor(year/100.0) / 4.0)
-		+ day - 1524.5
-		+ (hour + min/60 + sec/3600) / 24;
-
-	var t = (jd - 2451545)/36525;
-	var thetaGMST = 67310.54841 + (876600*3600 + 8640184.812866) * t 
-				+ .093104 * (t^2) - (6.2 * 10^-6) * (t^3);
-
-	var thetaGMST = ((thetaGMST % (86400 * (thetaGMST/Math.abs(thetaGMST)))) / 240) % 360;
-	var thetaLST = thetaGMST + longitude;
-	var thetaLST = thetaLST % 360;
-
-
-
-	var dec = Math.asin(Math.sin(altitude)*Math.sin(latitude) + Math.cos(altitude) * Math.cos(latitude) * Math.cos(azimuth));
-
-	var cos_RA = (Math.sin(altitude) - Math.sin(dec)*Math.sin(latitude))/(Math.cos(dec)*Math.cos(latitude));
-	var RA = Math.acos(cos_RA);
-	
-	if (Math.sin(azimuth) > 0) {
-		RA = 360 - RA;
-	}
-	RA = thetaLST - RA;
-	
-	if (RA < 0) {
-		RA = RA + 360;
-	}
-	if (dec >= 0) {
-		dec = Math.abs(dec);
-	} else {
-		dec = -Math.abs(dec);
-	}
-	console.log('>>' + cos_RA);
-	return [dec, RA];
-
-}
     
     
 function toRad(a) {

@@ -3,11 +3,17 @@ var app = {
     dom: {},
     userLocation: { lat: 0, lon: 0, heading: 0 },
     celestialObjects: [{ 
-        name:   'mercury', 
-        coords: [21.7, 238.9] 
+        name:   'mercury',         
+        audio:  'moon.mp3',
+        coords: [21.7, 238.9]
     }, {
-        name: 'venus',
+        name:   'moon',
+        audio:  'moon.mp3',
         coords: [63, 150]
+    },{
+        name:   'vela',
+        audio:  'pulsar_vela.mp3',
+        coords: [21, 200]    
     }],
     
 

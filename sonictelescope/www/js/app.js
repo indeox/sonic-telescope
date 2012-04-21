@@ -40,7 +40,7 @@ var app = {
             lon:      $('#l-lon'),
             heading:  $('#c-heading')
         }
-        
+
         window.addEventListener("deviceorientation", app.handleOrientation);
         /*navigator.compass.watchHeading(app.handleCompass,
             function() {
@@ -99,10 +99,10 @@ var app = {
     
     
         var userLocation = [altitude, azimuth];
+        
         var degrees = app.getDegrees(userLocation, app.objects[0].coords);
-        
-        
-    
+        var angularSeparation = app.getAngularSeparation(userLocation, app.objects[0].coords);
+
         // Debug
         app.dom.alpha.text(alpha + ' ('+(360-alpha)+')');
         app.dom.beta.text(beta);
@@ -117,8 +117,11 @@ var app = {
         }
     },
     
-
-    function convertHorizontalToEquatorial(latitude, altitude, azimuth) {  
+    /**
+     * Convert coordinates from horizontal to equatorial coordinate system.
+     * see http://en.wikipedia.org/wiki/Horizontal_coordinate_system
+     */
+    convertHorizontalToEquatorial : function(latitude, altitude, azimuth) {  
         var sinD,  
             cosH,  
             HA,
@@ -143,9 +146,63 @@ var app = {
         
         // Convert to degrees
         declination = radiansToDegrees(declination);
-        HA = HA / 15.0;  
+        HA = HA / 15.0;
         
         return [declination, HA];
+    },    
+    
+    /*
+     * http://answers.yahoo.com/question/index?qid=20070830185150AAoNT4i
+     * http://mysite.verizon.net/res148h4j/javascript/script_clock.html
+     * Uses Meeus formula 11.4
+     */
+    convertHAtoRA : function(lon) {
+        var time = new Date();
+        var year = time.getUTCFullYear() - 1,
+			month = time.getMonth() + 1,
+			day = time.getUTCDate(),
+			hour = time.getUTCMinutes(),
+			min = time.getUTCMinutes(),
+			sec = time.getUTCSeconds();
+        
+        var dwhole = 367 * y - parseInt(7 * (year + parseInt((month + 9) / 12)) / 4) 
+        + parseInt(275 * month / 9) 
+        + day - 730531.5;
+        var dfrac = (hour + min/60 + sec/3600)/24;
+        var d = dwhole + dfrac
+        var GMST = (280.46061837 + 360.98564736629 * d) % 360;
+        var LMST = (280.46061837 + 360.98564736629 * d + lon) % 360;
+        
+        return [GMST,LST, d];
+    },
+    
+    convertHAtoRA2 : function(lon) {
+    
+        var time = new Date();
+        var year = time.getUTCFullYear() - 1,
+			month = time.getMonth() + 1,
+			day = time.getUTCDate(),
+			hour = time.getUTCMinutes(),
+			min = time.getUTCMinutes(),
+			sec = time.getUTCSeconds();
+        
+    
+        // julian date
+        var jd = 367 * year 
+			- parseInt( 7 * [year + parseInt( [month + 9]/12 )]/4 ) 
+			- parseInt( 3 * [parseInt( [year + (month - 9)/7]/100 ) + 1]/4 ) 
+			+ parseInt( 275 * month/9 ) 
+			+ day
+			+ 1721028.5 
+			+ hour/24 
+			+ minute/1440 
+			+ second/86400;
+        
+        var a = 280.46061837 + 360.98564736629 * jd + 0.000387933*( parseInt(jd/36525.0) )^2 - ( parseInt(jd/36525.0) )^3/38710000;
+        var GMST = a % 360;
+        var LST = (GMST+lon) % 360;
+        
+        return [GMST,LST, a];
     },    
     
     // Get angular separation between to objects
@@ -178,46 +235,7 @@ var app = {
 
         return R * c;
     }
-             
-             
-	convertHAtoRA : function(lon) {
-		var time = new Date();
-		var year = time.getFullYear(),
-			month = time.getMonth() + 1,
-			day = time.getDate(),
-			hour = time.getHours(),
-			min = time.getMinutes(),
-			sec = time.getSeconds();
-				
-		var dwhole = 367 * y - parseInt(7 * (year + parseInt((month + 9) / 12)) / 4) 
-					+ parseInt(275 * month / 9) 
-					+ day - 730531.5;
-		var dfrac = (hour + min/60 + sec/3600)/24;
-		var jd = dwhole + dfrac;
-		var GMST = (280.46061837 + 360.98564736629 * jd) % 360;
-		var LMST = (280.46061837 + 360.98564736629 * jd + lon) % 360;
 
-		return [GMST,LST,jd];
-	},
-	
-	convertHAtoRA2 : function(lon) {
-		// julian date
-		var jd = 367 * year 
-				- parseInt( 7 * [year + parseInt( [month + 9]/12 )]/4 ) 
-				- parseInt( 3 * [parseInt( [year + (month - 9)/7]/100 ) + 1]/4 ) 
-				+ parseInt( 275 * month/9 ) 
-				+ day
-				+ 1721028.5 
-				+ hour/24 
-				+ minute/1440 
-				+ second/86400;
-		
-		var a = 280.46061837 + 360.98564736629 * jd + 0.000387933 * ( parseInt(jd/36525.0) )^2 - ( parseInt(jd/36525.0) )^3/38710000;
-		var GMST = a % 360;
-		var LST = (GMST+lon) % 360;
-		
-		return [GMST,LST, a];
-	}
                 
 }    
     

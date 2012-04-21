@@ -77,7 +77,6 @@ var app = {
      * Handle compass events
      */
     handleCompass: function(heading) {
-        // Update compass
         app.userLocation.heading = heading.magneticHeading;
         
         app.dom.heading.text(app.userLocation.heading);
@@ -91,9 +90,12 @@ var app = {
             beta     = Math.round(orientation.beta),
             gamma    = Math.round(orientation.gamma),
             altitude = orientation.beta,
-            azimuth  = heading;
+            azimuth  = app.userLocation.heading;
         
         var userLocation = [altitude, azimuth];
+        
+        // Loop through list of celestial objects
+        
         
         var degrees = app.getDegrees(userLocation, app.objects[0].coords);
         var angularSeparation = app.getAngularSeparation(userLocation, app.objects[0].coords);

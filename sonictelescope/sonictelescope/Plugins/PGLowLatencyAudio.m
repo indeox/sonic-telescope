@@ -301,4 +301,44 @@ NSString* RESTRICTED = @"ACTION RESTRICTED FOR FX AUDIO";
     [audioID release];
 }
 
+
+- (void) setVolume:(NSMutableArray*)arguments withDict:(NSMutableDictionary*)options
+{
+    CDVPluginResult* pluginResult;
+    NSString* callbackID = [arguments pop];
+    [callbackID retain];
+    
+    NSString *audioID = [arguments objectAtIndex:0]; 
+    NSString *volumeStr = [arguments objectAtIndex:1];
+        
+    [audioID retain];
+    
+    if ( audioMapping )
+    {
+        NSObject* asset = [audioMapping objectForKey: audioID];
+        if ([asset isKindOfClass:[PGLowLatencyAudioAsset class]])
+        { 
+            PGLowLatencyAudioAsset *_asset = (PGLowLatencyAudioAsset*) asset;
+            [_asset setVolume: [volumeStr floatValue]];
+            
+            pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString: STOP_REQUESTED];
+            [self writeJavascript: [pluginResult toSuccessCallbackString:callbackID]];    
+        }
+        else if ( [asset isKindOfClass:[NSNumber class]] )
+        {
+            pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString: RESTRICTED];        
+            [self writeJavascript: [pluginResult toErrorCallbackString:callbackID]];
+        }
+        
+    }
+    else 
+    {
+        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString: ERROR_MISSING_REFERENCE];        
+        [self writeJavascript: [pluginResult toErrorCallbackString:callbackID]];
+    }
+    
+    [callbackID release];
+    [audioID release];
+
+}
 @end

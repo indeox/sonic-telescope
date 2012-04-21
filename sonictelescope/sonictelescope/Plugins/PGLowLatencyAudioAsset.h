@@ -31,4 +31,5 @@
 - (void) stop;
 - (void) loop;
 - (void) unload;
+- (void) setVolume:(float) volume;
 @end

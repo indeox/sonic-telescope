@@ -87,4 +87,14 @@
     [voices release];
 }
 
+-(void) setVolume: (float) volume
+{
+    for (int x = 0; x < [voices count]; x++) 
+    {
+        AVAudioPlayer * player = [voices objectAtIndex:x];
+        //[player setVolume:volume];
+        player.volume = volume;
+    }
+}
+
 @end

@@ -33,7 +33,7 @@
 - (void) stop:(NSMutableArray*)arguments withDict:(NSMutableDictionary*)options;
 - (void) loop:(NSMutableArray*)arguments withDict:(NSMutableDictionary*)options;
 - (void) unload:(NSMutableArray*)arguments withDict:(NSMutableDictionary*)options;
-
+- (void) setVolume:(NSMutableArray*)arguments withDict:(NSMutableDictionary*)options;
 
 //Instance Methods  
 

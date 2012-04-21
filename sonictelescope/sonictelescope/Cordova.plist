@@ -13,7 +13,7 @@
 	<key>AutoHideSplashScreen</key>
 	<true/>
 	<key>ShowSplashScreenSpinner</key>
-	<true/>
+	<false/>
 	<key>MediaPlaybackRequiresUserAction</key>
 	<false/>
 	<key>AllowInlineMediaPlayback</key>
@@ -52,6 +52,8 @@
 		<string>CDVSplashScreen</string>
 		<key>Battery</key>
 		<string>CDVBattery</string>
+		<key>PGLowLatencyAudio</key>
+		<string>PGLowLatencyAudio</string>
 	</dict>
 </dict>
 </plist>

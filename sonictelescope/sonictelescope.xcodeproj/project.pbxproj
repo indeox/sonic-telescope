@@ -39,6 +39,8 @@
 		5511875E1542C7F5007735FE /* MainViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5511875D1542C7F5007735FE /* MainViewController.xib */; };
 		551187621542C7F5007735FE /* verify.sh in Resources */ = {isa = PBXBuildFile; fileRef = 551187611542C7F5007735FE /* verify.sh */; };
 		551187691542C997007735FE /* www in Resources */ = {isa = PBXBuildFile; fileRef = 551187681542C997007735FE /* www */; };
+		55FF5C2A1543491F00A6D077 /* PGLowLatencyAudio.m in Sources */ = {isa = PBXBuildFile; fileRef = 55FF5C271543491F00A6D077 /* PGLowLatencyAudio.m */; };
+		55FF5C2B1543491F00A6D077 /* PGLowLatencyAudioAsset.m in Sources */ = {isa = PBXBuildFile; fileRef = 55FF5C291543491F00A6D077 /* PGLowLatencyAudioAsset.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -80,6 +82,10 @@
 		551187601542C7F5007735FE /* README */ = {isa = PBXFileReference; lastKnownFileType = text; name = README; path = Plugins/README; sourceTree = "<group>"; };
 		551187611542C7F5007735FE /* verify.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = verify.sh; sourceTree = "<group>"; };
 		551187681542C997007735FE /* www */ = {isa = PBXFileReference; lastKnownFileType = folder; path = www; sourceTree = "<group>"; };
+		55FF5C261543491F00A6D077 /* PGLowLatencyAudio.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PGLowLatencyAudio.h; path = Plugins/PGLowLatencyAudio.h; sourceTree = "<group>"; };
+		55FF5C271543491F00A6D077 /* PGLowLatencyAudio.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = PGLowLatencyAudio.m; path = Plugins/PGLowLatencyAudio.m; sourceTree = "<group>"; };
+		55FF5C281543491F00A6D077 /* PGLowLatencyAudioAsset.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PGLowLatencyAudioAsset.h; path = Plugins/PGLowLatencyAudioAsset.h; sourceTree = "<group>"; };
+		55FF5C291543491F00A6D077 /* PGLowLatencyAudioAsset.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = PGLowLatencyAudioAsset.m; path = Plugins/PGLowLatencyAudioAsset.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -257,6 +263,10 @@
 		5511875F1542C7F5007735FE /* Plugins */ = {
 			isa = PBXGroup;
 			children = (
+				55FF5C261543491F00A6D077 /* PGLowLatencyAudio.h */,
+				55FF5C271543491F00A6D077 /* PGLowLatencyAudio.m */,
+				55FF5C281543491F00A6D077 /* PGLowLatencyAudioAsset.h */,
+				55FF5C291543491F00A6D077 /* PGLowLatencyAudioAsset.m */,
 				551187601542C7F5007735FE /* README */,
 			);
 			name = Plugins;
@@ -362,6 +372,8 @@
 				551187311542C7F5007735FE /* main.m in Sources */,
 				551187591542C7F5007735FE /* AppDelegate.m in Sources */,
 				5511875C1542C7F5007735FE /* MainViewController.m in Sources */,
+				55FF5C2A1543491F00A6D077 /* PGLowLatencyAudio.m in Sources */,
+				55FF5C2B1543491F00A6D077 /* PGLowLatencyAudioAsset.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -546,6 +558,7 @@
 				551187671542C7F5007735FE /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

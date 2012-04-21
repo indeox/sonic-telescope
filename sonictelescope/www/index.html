@@ -14,6 +14,7 @@
 	-->
 	<!-- If your application is targeting iOS BEFORE 4.0 you MUST put json2.js from http://www.JSON.org/json2.js into your www directory and include it here -->
 	<script type="text/javascript" charset="utf-8" src="js/cordova-1.6.1.js"></script>
+    <script type="text/javascript" charset="utf-8" src="js/PGLowLatencyAudio.js"></script>
     <script type="text/javascript" charset="utf-8" src="js/zepto.js"></script>
     <script type="text/javascript" charset="utf-8" src="js/app.js"></script>
     <script type="text/javascript" charset="utf-8" src="js/audio.js"></script>
@@ -64,11 +65,12 @@
     
     <h2>Gyro</h2>
 	<ol id="gyro">
-        <li>Alpha: <span id="g-alpha"></span></li>
-        <li>Beta: <span id="g-beta"></span></li>
+        <li>Altitude: <span id="g-altitude"></span></li>
+        <li>Azimuth: <span id="g-azimuth"></span></li>
         <li>Gamma: <span id="g-gamma"></span></li>
-        <li>Returned Degrees: <span id="g-dump"></span></li>
 	</ol>
+    
+    <ul id="objects"></ul>
     
     <h2>GPS</h2>
 	<ol id="location">

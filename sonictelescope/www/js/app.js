@@ -119,10 +119,11 @@ var app = {
      * Convert coordinates from horizontal to equatorial coordinate system.
      * see http://en.wikipedia.org/wiki/Horizontal_coordinate_system
      */
-    convertHorizontalToEquatorial: function(latitude, altitude, azimuth) {  
+    convertHorizontalToEquatorial: function(latitude, longitude, altitude, azimuth) {  
         var sinD,  
             cosH,  
             HA,
+            RA,
             declination;
         
         // Convert to radians
@@ -146,7 +147,9 @@ var app = {
         declination = radiansToDegrees(declination);
         HA = HA / 15.0;
         
-        return [declination, HA];
+        RA = lst3(longitude)[1] - HA;
+        
+        return [RA, declination];
     },    
     
     /*
@@ -227,6 +230,18 @@ var app = {
         // Convert coordinates
         var userCoordsEQ = convertHorizontalToEquatorial(userCoords),
             celestialCoordsEQ = convertHorizontalToEquatorial(celestialCoords);
+        
+        ra1 = parseFloat(userCoordsEQ[0]);
+        ra2 = parseFloat(celestialCoordsEQ[0]);
+        dec1 = parseFloat(userCoords[1]);
+        dec2 = parseFloat(celestialCoords[1]);
+        
+        var distance = ra2 - ra1;
+        
+        var cosSep = (Math.sin(degreesToRadians(dec1)) * Math.sin(degreesToRadians(dec2))) +
+        (Math.cos(degreesToRadians(dec1)) * Math.cos(degreesToRadians(dec2)) * Math.cos(degreesToRadians(distance)));
+        
+        return radiansToDegrees(Math.cos(cosSep));
     },
     
     //getDegrees: function(lat1, lon1, lat2, long2) {

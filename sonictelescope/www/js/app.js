@@ -280,7 +280,13 @@ var app = {
 }    
     
     
+function radiansToDegrees(radians) {
+    return radians * (180 / Math.PI);
+}
     
+function degreesToRadians(degrees) {
+    return degrees * (Math.PI / 180);
+}        
     
 function toRad(a) {
     return a * (Math.PI/180);

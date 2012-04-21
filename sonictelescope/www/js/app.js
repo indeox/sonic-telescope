@@ -40,7 +40,10 @@ var app = {
             lon:      $('#l-lon'),
             heading:  $('#c-heading')
         }
-        
+        var converted = app.convHorToEqu(51, -8.4, 279.9);
+        console.log("c", converted);
+        app.dom.gyrodump.text(converted);
+
         window.addEventListener("deviceorientation", app.handleOrientation);
         /*navigator.compass.watchHeading(app.handleCompass,
             function() {
@@ -85,7 +88,6 @@ var app = {
         app.dom.heading.text(app.location.heading);
     },
     
-    
     findClosestObject: function(orientation) {
         var alpha    = Math.round(orientation.alpha),
             beta     = Math.round(orientation.beta),
@@ -95,19 +97,14 @@ var app = {
             altitude = orientation.beta,
             azimuth  = heading;
     
-    
         var userLocation = [altitude, azimuth];
-        var degrees = app.getDegrees(userLocation, app.objects[0].coords);
-        
-        
-    
+        //var degrees = app.getDegrees(userLocation, app.objects[0].coords);
+
         // Debug
         app.dom.alpha.text(alpha + ' ('+(360-alpha)+')');
         app.dom.beta.text(beta);
         app.dom.gamma.text(gamma);
-        app.dom.gyrodump.text(degrees);
         
-    
         if (true) {
             return app.objects[0];
         } else {
@@ -115,8 +112,43 @@ var app = {
         }
     },
     
+    function convertHorizontalToEquatorial(latitude, altitude, azimuth) {  
+        var sinD,  
+            cosH,  
+            HA,
+            declination;
+        
+        // Convert to radians
+        altitude = degreesToRadians(altitude);
+        azimuth = degreesToRadians(azimuth);  
+        latitude = degreesToRadians(latitude);
+        
+        // Calculate declination
+        sinD = (Math.sin(altitude) * Math.sin(latitude)) + (Math.cos(altitude) * Math.cos(latitude) * Math.cos(azimuth));  
+        declination = Math.asin(sinD);
+        
+        // Calculate hour angle
+        cosH = ((Math.sin(altitude) - (Math.sin(latitude) * Math.sin(declination))) / (Math.cos(latitude) * Math.cos(declination)));
+
+        HA = radiansToDegrees(Math.acos(cosH));  
+        if (Math.sin(azimuth) > 0)  {  
+            HA = 360 - HA;  
+        }  
+        
+        // Convert to degrees
+        declination = radiansToDegrees(declination);
+        HA = HA / 15.0;  
+        
+        return [declination, HA];
+    },    
     
-    //getDegrees: function(lat1, lon1, lat2, long2) {
+    // Get angular separation between to objects
+    getAngularSeparation: function(userCoords, celestialCoords) {
+        // Convert coordinates from 
+        var userCoordsEQ = convertHorizontalToEquatorial(userCoords),
+            celestialCoordsEQ = convertHorizontalToEquatorial(celestialCoords);
+    },
+    
     getDegrees: function(userLocation, celestialObject) {
         var al1 = userLocation[0],
             az1 = userLocation[1],
@@ -139,9 +171,11 @@ var app = {
                 
 }    
     
+function radiansToDegrees(radians) {
+    return radians * (180 / Math.PI);
+}
     
-    
-function toRad(a) {
-    return a * Math.PI/180;
+function degreesToRadians(degrees) {
+    return degrees * (Math.PI / 180);
 }    
 

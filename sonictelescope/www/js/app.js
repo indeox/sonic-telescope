@@ -226,7 +226,7 @@ var app = {
 		var jd = b + c + d - 730550.5 + day + (hour + minute/60.0 + second/3600.0)/24.0;
 		
 		var jt   = jd/36525.0; // julian centuries since J2000.0         
-		var GMST = 280.46061837 + 360.98564736629*jd + 0.000387933*jt*jt - jt*jt*jt/38710000 + lon;
+		var GMST = 280.46061837 + 360.98564736629*jd + 0.000387933*jt*jt - jt*jt*jt/38710000;
 		 
 		if( GMST > 0.0 ) {
 			while (GMST > 360.0 ) {

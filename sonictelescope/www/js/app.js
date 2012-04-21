@@ -12,9 +12,7 @@ var app = {
     
 
     init: function() {
-        
         app.locateUser();
-        
         app.audio.init();
         
         // Debug only
@@ -25,12 +23,12 @@ var app = {
             gamma:    $('#g-gamma'),
             gyrodump: $('#g-dump'),
             objects:  $('#objects'),
-            
             lat:      $('#l-lat'),
             lon:      $('#l-lon'),
             heading:  $('#c-heading')
         }
-
+        
+        // Setup events
         window.addEventListener("deviceorientation", app.handleOrientation);
         navigator.compass.watchHeading(app.handleCompass,
             function() {
@@ -40,10 +38,10 @@ var app = {
         );
     },
     
-    
+    /**
+     *  Get GPS coordinates.
+     */
     locateUser: function() {
-        // Get GPS Coordinates    
-        // app.location = {}
         if (navigator) {
 			navigator.geolocation.getCurrentPosition(function(position) {
 				app.userLocation.lat = position.coords.latitude;
@@ -55,14 +53,19 @@ var app = {
 		}
     },
     
-    
+    /**
+     * Init celestial objects.
+     * Get list from Wolfram Alpha API.
+     */
     initObjects: function(lon, lat) {
         // Call webservice and populate app.objects
         
         // Normalise coordinates for the app.objects lookup array
     },
     
-    
+    /**
+     * Handle gyroscope events.
+     */
     handleOrientation: function(orientation) {
         // Check if any objects are in range        
         var objectInView = app.findClosestObject(orientation);
@@ -70,6 +73,9 @@ var app = {
         if (objectInView) { app.audio.play(objectInView); }
     },
     
+    /**
+     * Handle compass events
+     */
     handleCompass: function(heading) {
         // Update compass
         app.userLocation.heading = heading.magneticHeading;
@@ -77,26 +83,20 @@ var app = {
         app.dom.heading.text(app.userLocation.heading);
     },
     
-    
+    /**
+     * Find closest object to user vector.
+     */
     findClosestObject: function(orientation) {
         var alpha    = Math.round(orientation.alpha),
             beta     = Math.round(orientation.beta),
-            gamma    = Math.round(orientation.gamma),            
-            heading  = app.userLocation.heading,
-            
+            gamma    = Math.round(orientation.gamma),
             altitude = orientation.beta,
             azimuth  = heading;
-    
-        var sin = beta/90;        
-        Audio.setVolume('pulsar', sin);
-    
+        
         var userLocation = [altitude, azimuth];
         
         var degrees = app.getDegrees(userLocation, app.objects[0].coords);
         var angularSeparation = app.getAngularSeparation(userLocation, app.objects[0].coords);
-
-        
-        
     
         // Debug
         app.dom.alpha.text(alpha + ' ('+(360-alpha)+')');
@@ -116,7 +116,7 @@ var app = {
      * Convert coordinates from horizontal to equatorial coordinate system.
      * see http://en.wikipedia.org/wiki/Horizontal_coordinate_system
      */
-    convertHorizontalToEquatorial : function(latitude, altitude, azimuth) {  
+    convertHorizontalToEquatorial: function(latitude, altitude, azimuth) {  
         var sinD,  
             cosH,  
             HA,

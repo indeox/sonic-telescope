@@ -110,7 +110,7 @@ var app = {
      * Convert coordinates from horizontal to equatorial coordinate system.
      * see http://en.wikipedia.org/wiki/Horizontal_coordinate_system
      */
-    function convertHorizontalToEquatorial(latitude, altitude, azimuth) {  
+    convertHorizontalToEquatorial: function(latitude, altitude, azimuth) {  
         var sinD,  
             cosH,  
             HA,

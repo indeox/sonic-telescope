@@ -19,7 +19,7 @@ var app = {
         app.dom = { 
             absolute: $('#g-absolute'),
             altitude: $('#g-altitude'),
-            azimut    $('#g-azimuth'),        
+            azimut:    $('#g-azimuth'),        
             objects:  $('#objects'),
             lat:      $('#l-lat'),
             lon:      $('#l-lon'),

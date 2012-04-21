@@ -193,11 +193,11 @@ var app = {
 					+ parseInt(275 * month / 9) 
 					+ day - 730531.5;
 		var dfrac = (hour + min/60 + sec/3600)/24;
-		var d = dwhole + dfrac
-		var GMST = (280.46061837 + 360.98564736629 * d) % 360;
-		var LMST = (280.46061837 + 360.98564736629 * d + lon) % 360;
+		var jd = dwhole + dfrac;
+		var GMST = (280.46061837 + 360.98564736629 * jd) % 360;
+		var LMST = (280.46061837 + 360.98564736629 * jd + lon) % 360;
 
-		return [GMST,LST, d];
+		return [GMST,LST,jd];
 	},
 	
 	convertHAtoRA2 : function(lon) {
@@ -212,7 +212,7 @@ var app = {
 				+ minute/1440 
 				+ second/86400;
 		
-		var a = 280.46061837 + 360.98564736629 * jd + 0.000387933*( parseInt(jd/36525.0) )^2 - ( parseInt(jd/36525.0) )^3/38710000;
+		var a = 280.46061837 + 360.98564736629 * jd + 0.000387933 * ( parseInt(jd/36525.0) )^2 - ( parseInt(jd/36525.0) )^3/38710000;
 		var GMST = a % 360;
 		var LST = (GMST+lon) % 360;
 		

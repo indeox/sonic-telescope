@@ -124,6 +124,7 @@ var app = {
     /**
      * Convert coordinates from horizontal to equatorial coordinate system.
      * see http://en.wikipedia.org/wiki/Horizontal_coordinate_system
+     * http://star-www.st-and.ac.uk/~fv/webnotes/chapter7.htm
      * returns Right Acension (degrees), declination (degrees)
      */
     convertHorizontalToEquatorial: function(latitude, longitude, altitude, azimuth) {  
@@ -158,6 +159,7 @@ var app = {
         
         return [RA, declination];
     },    
+    
     
     /*
      * http://answers.yahoo.com/question/index?qid=20070830185150AAoNT4i
@@ -263,29 +265,29 @@ var app = {
         ra2 = parseFloat(celestialCoordsEQ[0]);
         dec1 = parseFloat(userCoords[1]);
         dec2 = parseFloat(celestialCoords[1]);
-
+		
+		console.log('getAngularSeparation -->>', ra1, dec1, ra2, dec2);
     
     	with (Math) {
-    		var cRA = degreesToRadians(ra1);
-    		var cDec = degreesToRadians(dec1);
+    		var ra1Rad = degreesToRadians(ra1);
+    		var dec1Rad = degreesToRadians(dec1);
     		
-    		var gRA = degreesToRadians(ra2);
-    		var gDec = degreesToRadians(dec2);
+    		var ra2Rad = degreesToRadians(ra2);
+    		var dec2Rad = degreesToRadians(dec2);
+    		console.log(ra1Rad, dec1Rad, ra2Rad, dec2Rad);
+    		var dRA = ra1Rad - ra2Rad;
+    		var dDec = dec2Rad - dec1Rad;
+    		//                 a				c				a				c				B
+    		var cosC = (sin(dec2Rad) * sin(dec1Rad)) + (cos(dec2Rad) * cos(dec1Rad) * cos(ra2Rad-ra1Rad));
+    		var x = (cos(dec1Rad) * sin(ra2Rad-ra1Rad)) / cosC;
     		
-    		var dRA = cRA - gRA;
-    		var dDec = gDec - cDec;
-    		
-    		var cosC = (sin(gDec) * sin(cDec)) + (cos(gDec) * cos(cDec) * cos(gRA-cRA));
-    		var x = (cos(cDec) * sin(gRA-cRA)) / cosC;
-    		
-    		var y = ((cos(gDec)*sin(cDec)) - (sin(gDec)*cos(cDec)*cos(gRA-cRA)))/cosC;
+    		var y = ((cos(dec2Rad)*sin(dec1Rad)) - (sin(dec2Rad)*cos(dec1Rad)*cos(ra2Rad-ra1Rad)))/cosC;
     		
     		var r = Math.sqrt(x*x+y*y);
     		
-    		console.log(r, radiansToDegrees(r));
-			return r;
+    		console.log('radians', r, 'degrees', radiansToDegrees(r));
     	}
-    
+    	return r;
     },
     
     //getDegrees: function(lat1, lon1, lat2, long2) {
@@ -339,7 +341,14 @@ var altitude = 35.6;
 var azimuth = 331.9;
 
 
-console.log(app.getAngularSeparation([altitude, azimuth], [altitude, azimuth]));
-console.log('getAngularSeparation2', app.getAngularSeparation2([altitude, azimuth], [36.6, azimuth]));
+var venusAltitude = 29.7;
+var venusAzimuth = 82.6;
+
+var mercuryAltitude = 37.9;
+var mercuryAzimuth = 169;
+
+
+console.log('getAngularSeparation', app.getAngularSeparation([venusAltitude, venusAzimuth], [mercuryAltitude, mercuryAzimuth]));
+console.log('getAngularSeparation2', app.getAngularSeparation2([venusAltitude, venusAzimuth], [mercuryAltitude, mercuryAzimuth]));
 
 

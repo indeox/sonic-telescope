@@ -103,20 +103,26 @@ var app = {
 
         // Loop through list of celestial objects
         var angularSeparation,
-            threshold = 15, // in degrees
+            threshold = 13, // in degrees
             celestialObject;
+
+		var closest = [];
 
         for (var i = 0; i < app.celestialObjects.length; i++) {
             // Calculate angular separation between object and user coords, 
             // if less than x return object
-            var angularSeparation = radiansToDegrees(app.getAngularSeparation(coords, app.celestialObjects[i].coords));
+            var angularSeparation = app.getAngularSeparation(coords, app.celestialObjects[i].coords);
+			closest[i] = {cO: i, deg: radiansToDegrees(angularSeparation)};
+		}
 
+		closest.sort(function(a,b) { return a.deg - b.deg; });
+		// closest index matches the celestialObjects index.
+		for (var i = 0; i < closest.length; i++) {
             //if (i == 1) { console.log(angularSeparation); }
-            if (angularSeparation < threshold) {
-                threshold = angularSeparation;
-                celestialObject = app.celestialObjects[i];
+            if (closest[i].deg <= threshold) {
+                celestialObject = app.celestialObjects[closest[i].cO];
+                break;
             }
-            
         }
         
         
@@ -264,7 +270,7 @@ var app = {
             dec2 = celestialCoords[1];
         
         var distance = ra2 - ra1;
-        console.log('distance', distance);
+
         var cosSep = (Math.sin(degreesToRadians(dec1)) * Math.sin(degreesToRadians(dec2))) +
         (Math.cos(degreesToRadians(dec1)) * Math.cos(degreesToRadians(dec2)) * Math.cos(degreesToRadians(distance)));
 
@@ -346,4 +352,6 @@ function degreesToRadians(val) {
 }        
 
 
-PGLowLatencyAudio = {};
+    
+
+

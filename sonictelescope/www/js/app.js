@@ -104,19 +104,26 @@ var app = {
 
         // Loop through list of celestial objects
         var angularSeparation,
-            threshold = 15,
+            threshold = 13, // in degrees
             celestialObject;
+
+		var closest = [];
+
         for (var i = 0; i < app.celestialObjects.length; i++) {
             // Calculate angular separation between object and user coords, 
             // if less than x return object
             var angularSeparation = app.getAngularSeparation(coords, app.celestialObjects[i].coords);
+			closest[i] = {cO: i, deg: radiansToDegrees(angularSeparation)};
+		}
 
-            if (i == 1) { console.log(angularSeparation); }
-            if (angularSeparation < threshold) {
-                threshold = angularSeparation;
-                celestialObject = app.celestialObjects[i];
+		closest.sort(function(a,b) { return a.deg - b.deg; });
+		// closest index matches the celestialObjects index.
+		for (var i = 0; i < closest.length; i++) {
+            //if (i == 1) { console.log(angularSeparation); }
+            if (closest[i].deg <= threshold) {
+                celestialObject = app.celestialObjects[closest[i].cO];
+                break;
             }
-            
         }
         
         
@@ -134,6 +141,7 @@ var app = {
     /**
      * Convert coordinates from horizontal to equatorial coordinate system.
      * see http://en.wikipedia.org/wiki/Horizontal_coordinate_system
+     * http://star-www.st-and.ac.uk/~fv/webnotes/chapter7.htm
      * returns Right Acension (degrees), declination (degrees)
      */
     convertHorizontalToEquatorial: function(latitude, longitude, altitude, azimuth) {  
@@ -168,6 +176,7 @@ var app = {
         
         return [RA, declination];
     },    
+    
     
     /*
      * http://answers.yahoo.com/question/index?qid=20070830185150AAoNT4i
@@ -262,7 +271,7 @@ var app = {
             dec2 = celestialCoords[1];
         
         var distance = ra2 - ra1;
-        console.log('distance', distance);
+
         var cosSep = (Math.sin(degreesToRadians(dec1)) * Math.sin(degreesToRadians(dec2))) +
         (Math.cos(degreesToRadians(dec1)) * Math.cos(degreesToRadians(dec2)) * Math.cos(degreesToRadians(distance)));
 
@@ -285,29 +294,29 @@ var app = {
         ra2 = parseFloat(celestialCoordsEQ[0]);
         dec1 = parseFloat(userCoords[1]);
         dec2 = parseFloat(celestialCoords[1]);
-
+		
+		console.log('getAngularSeparation -->>', ra1, dec1, ra2, dec2);
     
     	with (Math) {
-    		var cRA = degreesToRadians(ra1);
-    		var cDec = degreesToRadians(dec1);
+    		var ra1Rad = degreesToRadians(ra1);
+    		var dec1Rad = degreesToRadians(dec1);
     		
-    		var gRA = degreesToRadians(ra2);
-    		var gDec = degreesToRadians(dec2);
+    		var ra2Rad = degreesToRadians(ra2);
+    		var dec2Rad = degreesToRadians(dec2);
+    		console.log(ra1Rad, dec1Rad, ra2Rad, dec2Rad);
+    		var dRA = ra1Rad - ra2Rad;
+    		var dDec = dec2Rad - dec1Rad;
+    		//                 a				c				a				c				B
+    		var cosC = (sin(dec2Rad) * sin(dec1Rad)) + (cos(dec2Rad) * cos(dec1Rad) * cos(ra2Rad-ra1Rad));
+    		var x = (cos(dec1Rad) * sin(ra2Rad-ra1Rad)) / cosC;
     		
-    		var dRA = cRA - gRA;
-    		var dDec = gDec - cDec;
-    		
-    		var cosC = (sin(gDec) * sin(cDec)) + (cos(gDec) * cos(cDec) * cos(gRA-cRA));
-    		var x = (cos(cDec) * sin(gRA-cRA)) / cosC;
-    		
-    		var y = ((cos(gDec)*sin(cDec)) - (sin(gDec)*cos(cDec)*cos(gRA-cRA)))/cosC;
+    		var y = ((cos(dec2Rad)*sin(dec1Rad)) - (sin(dec2Rad)*cos(dec1Rad)*cos(ra2Rad-ra1Rad)))/cosC;
     		
     		var r = Math.sqrt(x*x+y*y);
     		
-    		console.log(r, radiansToDegrees(r));
-			return r;
+    		console.log('radians', r, 'degrees', radiansToDegrees(r));
     	}
-    
+    	return r;
     },
     
     //getDegrees: function(lat1, lon1, lat2, long2) {
@@ -317,12 +326,12 @@ var app = {
             al2 = celestialObject[0],
             az2 = celestialObject[1],
             R = 6371, // km
-            dAzimuth = toRad(az2-az1),
-            dAltitude = toRad(al2-al1);
+            dAzimuth = degreesToRadians(az2-az1),
+            dAltitude = degreesToRadians(al2-al1);
             
 
-        az1 = toRad(az1);
-        az2 = toRad(az2);
+        az1 = degreesToRadians(az1);
+        az2 = degreesToRadians(az2);
 
 		//3963.0 * arccos[sin(lat1) * sin(lat2) + cos(lat1) * cos(lat2) * cos(lon2 - lon1)]
 		//3963.0 * arctan[sqrt(1-x^2)/x]
@@ -344,4 +353,6 @@ function degreesToRadians(val) {
 }        
 
 
-PGLowLatencyAudio = {};
+    
+
+

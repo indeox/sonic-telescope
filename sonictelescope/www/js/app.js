@@ -124,6 +124,7 @@ var app = {
     /**
      * Convert coordinates from horizontal to equatorial coordinate system.
      * see http://en.wikipedia.org/wiki/Horizontal_coordinate_system
+     * returns Right Acension (degrees), declination (degrees)
      */
     convertHorizontalToEquatorial: function(latitude, longitude, altitude, azimuth) {  
         var sinD,  
@@ -200,16 +201,10 @@ var app = {
 			month += 12;
 		}
 	
-		var d = Math.floor(30.6001 * (month + 1));
-	
-		// days since J2000.0   
+		var d = Math.floor(30.6001 * (month + 1));  
 		var ut = (hour + min/60.0 + sec/3600.0);
-		
+		// days since J2000.0
 		var jd =  Math.floor(365.25*(year+4716)) + d + day - 13 -1524.5 + ut/24.0;
-
-		
-		var jt   = jd/36525.0; // julian centuries since J2000.0         
-		var GMST = 280.46061837 + 360.98564736629*jd + 0.000387933*jt*jt - jt*jt*jt/38710000;
 		
 		//
 		var frac = function(X) {
@@ -257,13 +252,76 @@ var app = {
             dec2 = celestialCoords[1];
         
         var distance = ra2 - ra1;
-        
+        console.log('distance', distance);
         var cosSep = (Math.sin(degreesToRadians(dec1)) * Math.sin(degreesToRadians(dec2))) +
         (Math.cos(degreesToRadians(dec1)) * Math.cos(degreesToRadians(dec2)) * Math.cos(degreesToRadians(distance)));
-        
+
         //var cosSep = Math.cos(90 - dec1) * Math.cos(90 - dec2) + Math.sin(90 - dec1) * Math.sin(90 - dec2) * Math.cos(distance);
         
         return Math.acos(parseFloat(cosSep));
+    },
+    
+    
+    /**
+     * 
+     *
+     */
+    getAngularSeparationEQ2 : function(userCoords, celestialCoords) {
+    
+        var userCoordsEQ = this.convertHorizontalToEquatorial(app.userLocation.lat, app.userLocation.lon, userCoords[0], userCoords[1]),
+            celestialCoordsEQ = this.convertHorizontalToEquatorial(app.userLocation.lat, app.userLocation.lon, celestialCoords[0], celestialCoords[1]);
+
+        ra1 = parseFloat(userCoordsEQ[0]);
+        ra2 = parseFloat(celestialCoordsEQ[0]);
+        dec1 = parseFloat(userCoords[1]);
+        dec2 = parseFloat(celestialCoords[1]);
+
+    
+    	with (Math) {
+    		var cRA = degreesToRadians(ra1);
+    		var cDec = degreesToRadians(dec1);
+    		
+    		var gRA = degreesToRadians(ra2);
+    		var gDec = degreesToRadians(dec2);
+    		
+    		var dRA = cRA - gRA;
+    		var dDec = gDec - cDec;
+    		
+    		var cosC = (sin(gDec) * sin(cDec)) + (cos(gDec) * cos(cDec) * cos(gRA-cRA));
+    		var x = (cos(cDec) * sin(gRA-cRA)) / cosC;
+    		
+    		var y = ((cos(gDec)*sin(cDec)) - (sin(gDec)*cos(cDec)*cos(gRA-cRA)))/cosC;
+    		
+    		var r = Math.sqrt(x*x+y*y);
+    		
+    		console.log(r, radiansToDegrees(r));
+			return r;
+    	}
+    
+    },
+    
+    //getDegrees: function(lat1, lon1, lat2, long2) {
+    getDegrees: function(userLocation, celestialObject) {
+        var al1 = userLocation[0],
+            az1 = userLocation[1],
+            al2 = celestialObject[0],
+            az2 = celestialObject[1],
+            R = 6371, // km
+            dAzimuth = toRad(az2-az1),
+            dAltitude = toRad(al2-al1);
+            
+
+        az1 = toRad(az1);
+        az2 = toRad(az2);
+
+		//3963.0 * arccos[sin(lat1) * sin(lat2) + cos(lat1) * cos(lat2) * cos(lon2 - lon1)]
+		//3963.0 * arctan[sqrt(1-x^2)/x]
+
+        var a = Math.sin(dAzimuth/2) * Math.sin(dAzimuth/2) +
+                Math.sin(dAltitude/2) * Math.sin(dAltitude/2) * Math.cos(az1) * Math.cos(az2); 
+        var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
+
+        return R * c;
     }
 }    
     
@@ -276,13 +334,9 @@ function degreesToRadians(val) {
 }        
 
 
-// Alias to PGLowLatencyAudio
 PGLowLatencyAudio = {};
 
 var venus = [38.2, 174];
 var mercury = [31.8, 85.2];
 console.log("1", app.getAngularSeparation(venus, mercury), radiansToDegrees(app.getAngularSeparation(venus, mercury)));
 console.log("2", app.getAngularSeparationEQ(venus, mercury), radiansToDegrees(app.getAngularSeparationEQ(venus, mercury)));
-
-
-

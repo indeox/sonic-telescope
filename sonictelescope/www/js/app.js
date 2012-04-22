@@ -229,10 +229,24 @@ var app = {
     },
     
     /**
-     * Calculates angular separation between two points
-     * (ra1, dec1) and (ra2, dec2) using cosine rule. 
+     * Calculates angular separation.
      */
     getAngularSeparation: function(userCoords, celestialCoords) {
+        var a1 = degreesToRadians(userCoords[0]),
+            a2 = degreesToRadians(celestialCoords[0]),
+            b1 = degreesToRadians(userCoords[1]),
+            b2 = degreesToRadians(celestialCoords[1]);
+    
+        var cosSep = Math.sin(a2) * Math.sin(a1) + Math.cos(a2) * Math.cos(a1) * Math.cos(b2 - b1);
+    
+        return Math.acos(cosSep);
+    },    
+    
+    /**
+     * Calculates angular separation between two points
+     * Converts inot equatorial coordinates before calculating angular separation. 
+     */
+    getAngularSeparationEQ: function(userCoords, celestialCoords) {
         // Convert coordinates
         var userCoordsEQ = this.convertHorizontalToEquatorial(app.userLocation.lat, app.userLocation.lon, userCoords[0], userCoords[1]),
             celestialCoordsEQ = this.convertHorizontalToEquatorial(app.userLocation.lat, app.userLocation.lon, celestialCoords[0], celestialCoords[1]);
@@ -249,64 +263,26 @@ var app = {
         
         //var cosSep = Math.cos(90 - dec1) * Math.cos(90 - dec2) + Math.sin(90 - dec1) * Math.sin(90 - dec2) * Math.cos(distance);
         
-        console.log(ra1, dec1, ra2, dec2, Math.acos(cosSep));
-        
         return Math.acos(parseFloat(cosSep));
-    },
-    
-    //getDegrees: function(lat1, lon1, lat2, long2) {
-    getDegrees: function(userLocation, celestialObject) {
-        var al1 = userLocation[0],
-            az1 = userLocation[1],
-            al2 = celestialObject[0],
-            az2 = celestialObject[1],
-            R = 6371, // km
-            dAzimuth = toRad(az2-az1),
-            dAltitude = toRad(al2-al1);
-            
-
-        az1 = toRad(az1);
-        az2 = toRad(az2);
-
-		//3963.0 * arccos[sin(lat1) * sin(lat2) + cos(lat1) * cos(lat2) * cos(lon2 - lon1)]
-		//3963.0 * arctan[sqrt(1-x^2)/x]
-
-        var a = Math.sin(dAzimuth/2) * Math.sin(dAzimuth/2) +
-                Math.sin(dAltitude/2) * Math.sin(dAltitude/2) * Math.cos(az1) * Math.cos(az2); 
-        var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
-
-        return R * c;
     }
-
-                
 }    
     
-    
-function radiansToDegrees(radians) {
-    return radians * (180 / Math.PI);
+function radiansToDegrees(val) {
+    return val * (180 / Math.PI);
 }
     
-function degreesToRadians(degrees) {
-    return degrees * (Math.PI / 180);
+function degreesToRadians(val) {
+    return val * (Math.PI / 180);
 }        
-    
-function toRad(a) {
-    return a * (Math.PI/180);
-}    
 
 
 // Alias to PGLowLatencyAudio
 PGLowLatencyAudio = {};
 
-var lat= 51;
-app.userLocation.lat = lat;
-var lon = 0.1;
-app.userLocation.lon = lon;
-var altitude = 35.6;
-var azimuth = 331.9;
-
-
-console.log(app.getAngularSeparation([altitude, azimuth], [40, azimuth]));
+var venus = [38.2, 174];
+var mercury = [31.8, 85.2];
+console.log("1", app.getAngularSeparation(venus, mercury), radiansToDegrees(app.getAngularSeparation(venus, mercury)));
+console.log("2", app.getAngularSeparationEQ(venus, mercury), radiansToDegrees(app.getAngularSeparationEQ(venus, mercury)));
 
 
 

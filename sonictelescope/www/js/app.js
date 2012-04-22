@@ -25,7 +25,7 @@ var app = {
 
     init: function() {
         app.locateUser();
-        //app.audio.init();
+        app.audio.init();
         app.initObjects({
             callback: function() {
                 // Setup events
@@ -93,6 +93,8 @@ var app = {
         
         if (objectInView) { 
             app.dom.object.text(objectInView.name);            
+        } else {
+            app.dom.object.text('');
         }
         
         app.audio.updateAudioSpace();

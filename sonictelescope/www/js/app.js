@@ -10,6 +10,10 @@ var app = {
         name:   'moon',
         audio:  'moon.mp3',
         coords: [5.6, 307.7]
+    }, {
+        name:   'moon2',
+        audio:  'moon.mp3',
+        coords: [35.6, 307.7]
     },{
         name:   'vela',
         audio:  'pulsar_vela.mp3',
@@ -19,14 +23,13 @@ var app = {
 
     init: function() {
         app.locateUser();
-        app.audio.init();
+        //app.audio.init();
         
         // Debug only
         app.dom = { 
-            absolute: $('#g-absolute'),
             altitude: $('#g-altitude'),
             azimuth:  $('#g-azimuth'),        
-            objects:  $('#objects'),
+            object:   $('#o-object'),
             lat:      $('#l-lat'),
             lon:      $('#l-lon'),
             heading:  $('#c-heading')
@@ -74,7 +77,10 @@ var app = {
         // Check if any objects are in range        
         var objectInView = app.findClosestObject(orientation);
         
-        if (objectInView) { app.audio.play(objectInView); }
+        if (objectInView) { 
+            app.dom.object.text(objectInView.name);   
+            app.audio.play(objectInView); 
+        }
     },
     
     /**
@@ -97,18 +103,22 @@ var app = {
 
         // Loop through list of celestial objects
         var angularSeparation,
-            threshold = 10,
+            threshold = 15, // in degrees
             celestialObject;
+
         for (var i = 0; i < app.celestialObjects.length; i++) {
             // Calculate angular separation between object and user coords, 
             // if less than x return object
-            var angularSeparation = app.getAngularSeparation(coords, app.celestialObjects[i].coords);
-            if (i == 1) { console.log(angularSeparation); }
+            var angularSeparation = radiansToDegrees(app.getAngularSeparation(coords, app.celestialObjects[i].coords));
+
+            //if (i == 1) { console.log(angularSeparation); }
             if (angularSeparation < threshold) {
                 threshold = angularSeparation;
-                celestialObject = celestialObjects[i];
+                celestialObject = app.celestialObjects[i];
             }
+            
         }
+        
         
         // Debug
         app.dom.altitude.text(altitude);
@@ -226,10 +236,24 @@ var app = {
     },
     
     /**
-     * Calculates angular separation between two points
-     * (ra1, dec1) and (ra2, dec2) using cosine rule. 
+     * Calculates angular separation.
      */
     getAngularSeparation: function(userCoords, celestialCoords) {
+        var a1 = degreesToRadians(userCoords[0]),
+            a2 = degreesToRadians(celestialCoords[0]),
+            b1 = degreesToRadians(userCoords[1]),
+            b2 = degreesToRadians(celestialCoords[1]);
+    
+        var cosSep = Math.sin(a2) * Math.sin(a1) + Math.cos(a2) * Math.cos(a1) * Math.cos(b2 - b1);
+    
+        return Math.acos(cosSep);
+    },    
+    
+    /**
+     * Calculates angular separation between two points
+     * Converts inot equatorial coordinates before calculating angular separation. 
+     */
+    getAngularSeparationEQ: function(userCoords, celestialCoords) {
         // Convert coordinates
         var userCoordsEQ = this.convertHorizontalToEquatorial(app.userLocation.lat, app.userLocation.lon, userCoords[0], userCoords[1]),
             celestialCoordsEQ = this.convertHorizontalToEquatorial(app.userLocation.lat, app.userLocation.lon, celestialCoords[0], celestialCoords[1]);
@@ -246,8 +270,6 @@ var app = {
 
         //var cosSep = Math.cos(90 - dec1) * Math.cos(90 - dec2) + Math.sin(90 - dec1) * Math.sin(90 - dec2) * Math.cos(distance);
         
-        console.log(ra1, dec1, ra2, dec2, Math.acos(cosSep));
-        
         return Math.acos(parseFloat(cosSep));
     },
     
@@ -256,7 +278,7 @@ var app = {
      * 
      *
      */
-    getAngularSeparation2 : function(userCoords, celestialCoords) {
+    getAngularSeparationEQ2 : function(userCoords, celestialCoords) {
     
         var userCoordsEQ = this.convertHorizontalToEquatorial(app.userLocation.lat, app.userLocation.lon, userCoords[0], userCoords[1]),
             celestialCoordsEQ = this.convertHorizontalToEquatorial(app.userLocation.lat, app.userLocation.lon, celestialCoords[0], celestialCoords[1]);
@@ -297,12 +319,12 @@ var app = {
             al2 = celestialObject[0],
             az2 = celestialObject[1],
             R = 6371, // km
-            dAzimuth = toRad(az2-az1),
-            dAltitude = toRad(al2-al1);
+            dAzimuth = degreesToRadians(az2-az1),
+            dAltitude = degreesToRadians(al2-al1);
             
 
-        az1 = toRad(az1);
-        az2 = toRad(az2);
+        az1 = degreesToRadians(az1);
+        az2 = degreesToRadians(az2);
 
 		//3963.0 * arccos[sin(lat1) * sin(lat2) + cos(lat1) * cos(lat2) * cos(lon2 - lon1)]
 		//3963.0 * arctan[sqrt(1-x^2)/x]
@@ -313,42 +335,15 @@ var app = {
 
         return R * c;
     }
-
-                
 }    
     
-    
-function radiansToDegrees(radians) {
-    return radians * (180 / Math.PI);
+function radiansToDegrees(val) {
+    return val * (180 / Math.PI);
 }
     
-function degreesToRadians(degrees) {
-    return degrees * (Math.PI / 180);
+function degreesToRadians(val) {
+    return val * (Math.PI / 180);
 }        
-    
-function toRad(a) {
-    return a * (Math.PI/180);
-}    
 
 
 PGLowLatencyAudio = {};
-
-var lat= 51;
-app.userLocation.lat = lat;
-var lon = 0.1;
-app.userLocation.lon = lon;
-var altitude = 35.6;
-var azimuth = 331.9;
-
-
-var venusAltitude = 29.7;
-var venusAzimuth = 82.6;
-
-var mercuryAltitude = 37.9;
-var mercuryAzimuth = 169;
-
-
-console.log('getAngularSeparation', app.getAngularSeparation([venusAltitude, venusAzimuth], [mercuryAltitude, mercuryAzimuth]));
-console.log('getAngularSeparation2', app.getAngularSeparation2([venusAltitude, venusAzimuth], [mercuryAltitude, mercuryAzimuth]));
-
-

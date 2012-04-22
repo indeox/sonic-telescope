@@ -4,6 +4,7 @@ var app = {
     userLocation: { lat: 0, lon: 0, heading: 0 },
     sortedClosestObjects: {},
     threshold: 25, // before an object is "in view", in degrees
+    previousObjectName: '',
     celestialObjects: [{ 
         name:   'mercury',         
         audio:  'moon.mp3',
@@ -72,7 +73,7 @@ var app = {
      */
     initObjects: function(params) {
         // Call webservice and populate app.objects
-        $.getJSON("http://130.246.235.48:8000/sonictelescope/", function(data) {
+        $.getJSON("http://www.deepcobalt.com/api/sonictelescope/", function(data) {
             app.celestialObjects = [];      
             for (var o in data) {
                 var obj = {};
@@ -80,6 +81,7 @@ var app = {
                 obj.coords = [parseFloat(data[o].altitude), parseFloat(data[o].azimuth)];
                 app.celestialObjects.push(obj);          
             }
+            
             if (params.callback) params.callback();
         });
     },
@@ -89,13 +91,24 @@ var app = {
      */
     handleOrientation: function(orientation) {
         // Check if any objects are in range        
-        var objectInView = app.findClosestObject(orientation);
+        var objectInView = app.findClosestObject(orientation),
+            objectName;
+
         
         if (objectInView) { 
-            app.dom.object.text(objectInView.name);            
+            objectName = objectInView.name;
+            //app.dom.object.text(objectInView.name);
         } else {
-            app.dom.object.text('');
+            objectName = '';
+            //app.dom.object.text('');
         }
+        
+        // Update DOM only if necessary
+        if (objectName != app.previousObjectName) {
+            app.dom.object.text(objectName);
+        }        
+        app.previousObjectName = objectName;
+        
         
         app.audio.updateAudioSpace();
     },
@@ -145,8 +158,8 @@ var app = {
         this.sortedClosestObjects = closest;
         
         // Debug
-        app.dom.altitude.text(altitude);
-        app.dom.azimuth.text(azimuth);
+        app.dom.altitude.text(altitude.toFixed(2));
+        app.dom.azimuth.text(azimuth.toFixed(2) + ' ('+app.celestialObjects.length+')');
     
         if (celestialObject) {
             return celestialObject;
@@ -289,7 +302,7 @@ var app = {
         dec1 = parseFloat(userCoords[1]);
         dec2 = parseFloat(celestialCoords[1]);
 		
-		console.log('getAngularSeparation -->>', ra1, dec1, ra2, dec2);
+		//console.log('getAngularSeparation -->>', ra1, dec1, ra2, dec2);
     
     	with (Math) {
     		var ra1Rad = degreesToRadians(ra1);
@@ -297,7 +310,7 @@ var app = {
     		
     		var ra2Rad = degreesToRadians(ra2);
     		var dec2Rad = degreesToRadians(dec2);
-    		console.log(ra1Rad, dec1Rad, ra2Rad, dec2Rad);
+    		//console.log(ra1Rad, dec1Rad, ra2Rad, dec2Rad);
     		var dRA = ra1Rad - ra2Rad;
     		var dDec = dec2Rad - dec1Rad;
     		//                 a				c				a				c				B
@@ -308,7 +321,7 @@ var app = {
     		
     		var r = Math.sqrt(x*x+y*y);
     		
-    		console.log('radians', r, 'degrees', radiansToDegrees(r));
+    		//console.log('radians', r, 'degrees', radiansToDegrees(r));
     	}
     	return r;
     },

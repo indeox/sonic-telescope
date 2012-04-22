@@ -4,7 +4,8 @@ app.audio = {
     
     map: {
         earth:   'earth.mp3',
-        neptune: 'jupiter.mp3',
+        neptune: 'neptune.mp3',
+        jupiter: 'jupiter.mp3',
         mars:    'mars_opportunity.mp3',
         moon:    'moon.mp3',
         mercury: 'moon.mp3',
@@ -46,17 +47,17 @@ app.audio = {
         
         //var objectName = app.celestialObjects[cO].name.toLowerCase();
         //console.log(app.sortedClosestObjects);
-        this.counter = this.counter++ || 0;
-        var self = this;
+        //this.counter = this.counter++ || 0;
+        //var self = this;
         
         $.each(app.sortedClosestObjects, function(item, val) {
             var objectName = app.celestialObjects[val.cO].name.toLowerCase(),
                 volume     = val.volume,
                 degrees    = val.deg;
             
-            if ((self.counter % 1000) == 0) {
+            /*if ((self.counter % 1000) == 0) {
                 console.log(objectName+': '+volume+' : '+degrees);
-            }            
+            }*/
             
             Audio.setVolume(objectName, volume);
         });

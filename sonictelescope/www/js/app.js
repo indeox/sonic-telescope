@@ -23,10 +23,9 @@ var app = {
         
         // Debug only
         app.dom = { 
-            absolute: $('#g-absolute'),
             altitude: $('#g-altitude'),
             azimuth:  $('#g-azimuth'),        
-            objects:  $('#objects'),
+            object:   $('#o-object'),
             lat:      $('#l-lat'),
             lon:      $('#l-lon'),
             heading:  $('#c-heading')
@@ -74,7 +73,10 @@ var app = {
         // Check if any objects are in range        
         var objectInView = app.findClosestObject(orientation);
         
-        if (objectInView) { app.audio.play(objectInView); }
+        if (objectInView) { 
+            app.dom.object.text(objectInView.name);   
+            app.audio.play(objectInView); 
+        }
     },
     
     /**
@@ -97,7 +99,7 @@ var app = {
 
         // Loop through list of celestial objects
         var angularSeparation,
-            threshold = 10,
+            threshold = 15,
             celestialObject;
         for (var i = 0; i < app.celestialObjects.length; i++) {
             // Calculate angular separation between object and user coords, 

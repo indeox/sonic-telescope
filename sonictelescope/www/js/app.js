@@ -2,6 +2,8 @@ var app = {
     
     dom: {},
     userLocation: { lat: 0, lon: 0, heading: 0 },
+    sortedClosestObjects: {},
+    threshold: 15, // before an object is "in view", in degrees
     celestialObjects: [{ 
         name:   'mercury',         
         audio:  'moon.mp3',
@@ -104,7 +106,6 @@ var app = {
 
         // Loop through list of celestial objects
         var angularSeparation,
-            threshold = 13, // in degrees
             celestialObject;
 
 		var closest = [];
@@ -113,19 +114,21 @@ var app = {
             // Calculate angular separation between object and user coords, 
             // if less than x return object
             var angularSeparation = app.getAngularSeparation(coords, app.celestialObjects[i].coords);
-			closest[i] = {cO: i, deg: radiansToDegrees(angularSeparation)};
+            var deg = radiansToDegrees(angularSeparation);
+			closest[i] = {cO: i, deg: deg, volume: degreesToVolume(deg)};
 		}
 
 		closest.sort(function(a,b) { return a.deg - b.deg; });
 		// closest index matches the celestialObjects index.
 		for (var i = 0; i < closest.length; i++) {
             //if (i == 1) { console.log(angularSeparation); }
-            if (closest[i].deg <= threshold) {
+            if (closest[i].deg <= this.threshold) {
                 celestialObject = app.celestialObjects[closest[i].cO];
                 break;
             }
         }
         
+        this.sortedClosestObjects = closest;
         
         // Debug
         app.dom.altitude.text(altitude);
@@ -352,6 +355,17 @@ function degreesToRadians(val) {
     return val * (Math.PI / 180);
 }        
 
+
+/**
+ * Convert degrees to volume - 0-100
+ */
+function degreesToVolume(deg) {
+	// if you're a degree away, maximum volume.
+	if (deg === 1) {
+		return 100;
+	}
+	return parseInt(((app.threshold-deg)/app.threshold)*100);
+}
 
     
 

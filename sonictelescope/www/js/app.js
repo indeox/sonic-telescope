@@ -24,6 +24,18 @@ var app = {
     init: function() {
         app.locateUser();
         //app.audio.init();
+        app.initObjects({
+            callback: function() {
+                // Setup events
+                window.addEventListener("deviceorientation", app.handleOrientation);
+                navigator.compass.watchHeading(app.handleCompass,
+                    function() {
+                        // Compass error here
+                    }, 
+                    { frequency: 500 }
+                );               
+            }
+        });
         
         // Debug only
         app.dom = { 
@@ -34,15 +46,6 @@ var app = {
             lon:      $('#l-lon'),
             heading:  $('#c-heading')
         }
-        
-        // Setup events
-        window.addEventListener("deviceorientation", app.handleOrientation);
-        navigator.compass.watchHeading(app.handleCompass,
-            function() {
-                // Compass error here
-            }, 
-            { frequency: 500 }
-        );
     },
     
     /**
@@ -62,12 +65,21 @@ var app = {
     
     /**
      * Init celestial objects.
-     * Get list from Wolfram Alpha API.
+     * Get list from Heavens Above scraper.
+     * TODO: Location is hardcoded to Reading at the moment;
      */
-    initObjects: function(lon, lat) {
+    initObjects: function(params) {
         // Call webservice and populate app.objects
-        
-        // Normalise coordinates for the app.objects lookup array
+        $.getJSON("http://130.246.235.48:8000/sonictelescope/", function(data) {
+            app.celestialObjects = [];      
+            for (var o in data) {
+                var obj = {};
+                obj.name = data[o].name;
+                obj.coords = [parseFloat(data[o].altitude), parseFloat(data[o].azimuth)];
+                app.celestialObjects.push(obj);          
+            }
+            if (params.callback) params.callback();
+        });
     },
     
     /**

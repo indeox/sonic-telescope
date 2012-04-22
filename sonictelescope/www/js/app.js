@@ -191,35 +191,12 @@ var app = {
         
         return [RA, declination];
     },    
-    
-    
+
     /*
      * http://answers.yahoo.com/question/index?qid=20070830185150AAoNT4i
      * http://mysite.verizon.net/res148h4j/javascript/script_clock.html
      * Uses Meeus formula 11.4
      */
-    lst : function(lon) {
-        var time = new Date();
-        var year = time.getUTCFullYear(),
-			month = time.getMonth() + 1,
-			day = time.getUTCDate(),
-			hour = time.getUTCMinutes(),
-			min = time.getUTCMinutes(),
-			sec = time.getUTCSeconds();
-
-        // days since J2000.0
-        var dwhole = 367 * year - parseInt(7 * (year + parseInt((month + 9) / 12)) / 4) 
-        		+ parseInt(275 * month / 9) 
-        		+ day - 730531.5;
-        var dfrac = (hour + min/60 + sec/3600)/24;
-        var jd = dwhole + dfrac;
-
-        var GMST = (280.46061837 + 360.98564736629 * jd) % 360;
-        var LMST = (280.46061837 + 360.98564736629 * jd + lon) % 360;
-        
-        return [GMST,LMST, jd];
-    },
-
     lst3 : function(lon)  {
 
     	var time = new Date();
@@ -375,6 +352,9 @@ function degreesToVolume(deg) {
 	// if you're a degree away, maximum volume.
 	if (deg === 1) {
 		return 100;
+	}
+	if (deg < 0) {
+		return 0;
 	}
 	return parseInt(((app.threshold-deg)/app.threshold)*100);
 }

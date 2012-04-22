@@ -232,17 +232,21 @@ var app = {
         var userCoordsEQ = this.convertHorizontalToEquatorial(app.userLocation.lat, app.userLocation.lon, userCoords[0], userCoords[1]),
             celestialCoordsEQ = this.convertHorizontalToEquatorial(app.userLocation.lat, app.userLocation.lon, celestialCoords[0], celestialCoords[1]);
 
-        ra1 = parseFloat(userCoordsEQ[0]);
-        ra2 = parseFloat(celestialCoordsEQ[0]);
-        dec1 = parseFloat(userCoords[1]);
-        dec2 = parseFloat(celestialCoords[1]);
+        var ra1 = userCoordsEQ[0];
+            ra2 = celestialCoordsEQ[0];
+            dec1 = userCoords[1];
+            dec2 = celestialCoords[1];
         
         var distance = ra2 - ra1;
         console.log('distance', distance);
         var cosSep = (Math.sin(degreesToRadians(dec1)) * Math.sin(degreesToRadians(dec2))) +
         (Math.cos(degreesToRadians(dec1)) * Math.cos(degreesToRadians(dec2)) * Math.cos(degreesToRadians(distance)));
-        console.log('cosSep', cosSep);
-        return radiansToDegrees(Math.cos(cosSep));
+
+        //var cosSep = Math.cos(90 - dec1) * Math.cos(90 - dec2) + Math.sin(90 - dec1) * Math.sin(90 - dec2) * Math.cos(distance);
+        
+        console.log(ra1, dec1, ra2, dec2, Math.acos(cosSep));
+        
+        return Math.acos(parseFloat(cosSep));
     },
     
     
@@ -337,9 +341,5 @@ var azimuth = 331.9;
 
 console.log(app.getAngularSeparation([altitude, azimuth], [altitude, azimuth]));
 console.log('getAngularSeparation2', app.getAngularSeparation2([altitude, azimuth], [36.6, azimuth]));
-
-// Alias to PGLowLatencyAudio
-Audio = PGLowLatencyAudio;
-
 
 

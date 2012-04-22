@@ -3,7 +3,7 @@ var app = {
     dom: {},
     userLocation: { lat: 0, lon: 0, heading: 0 },
     sortedClosestObjects: {},
-    threshold: 15, // before an object is "in view", in degrees
+    threshold: 25, // before an object is "in view", in degrees
     celestialObjects: [{ 
         name:   'mercury',         
         audio:  'moon.mp3',
@@ -352,13 +352,14 @@ function degreesToRadians(val) {
  */
 function degreesToVolume(deg) {
 	// if you're a degree away, maximum volume.
-	if (deg === 1) {
+	if (deg < 3) {
 		return 100;
 	}
 	if (deg < 0 || deg > app.threshold) {
 		return 0;
 	}
-	return parseInt(((app.threshold-deg)/app.threshold)*100);
+
+	return (app.threshold-deg)/app.threshold;
 }
 
     

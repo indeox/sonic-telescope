@@ -45,5 +45,7 @@
 	<string></string>
 	<key>NSMainNibFile~ipad</key>
 	<string></string>
+	<key>UIStatusBarHidden</key>
+	<true/>
 </dict>
 </plist>

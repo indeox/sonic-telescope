@@ -10,6 +10,10 @@ var app = {
         name:   'moon',
         audio:  'moon.mp3',
         coords: [5.6, 307.7]
+    }, {
+        name:   'moon2',
+        audio:  'moon.mp3',
+        coords: [35.6, 307.7]
     },{
         name:   'vela',
         audio:  'pulsar_vela.mp3',
@@ -19,7 +23,7 @@ var app = {
 
     init: function() {
         app.locateUser();
-        app.audio.init();
+        //app.audio.init();
         
         // Debug only
         app.dom = { 
@@ -105,12 +109,15 @@ var app = {
             // Calculate angular separation between object and user coords, 
             // if less than x return object
             var angularSeparation = app.getAngularSeparation(coords, app.celestialObjects[i].coords);
+
             if (i == 1) { console.log(angularSeparation); }
             if (angularSeparation < threshold) {
                 threshold = angularSeparation;
-                celestialObject = celestialObjects[i];
+                celestialObject = app.celestialObjects[i];
             }
+            
         }
+        
         
         // Debug
         app.dom.altitude.text(altitude);
@@ -337,8 +344,3 @@ function degreesToRadians(val) {
 
 
 PGLowLatencyAudio = {};
-
-var venus = [38.2, 174];
-var mercury = [31.8, 85.2];
-console.log("1", app.getAngularSeparation(venus, mercury), radiansToDegrees(app.getAngularSeparation(venus, mercury)));
-console.log("2", app.getAngularSeparationEQ(venus, mercury), radiansToDegrees(app.getAngularSeparationEQ(venus, mercury)));

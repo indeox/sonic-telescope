@@ -355,7 +355,7 @@ function degreesToVolume(deg) {
 	if (deg === 1) {
 		return 100;
 	}
-	if (deg < 0) {
+	if (deg < 0 || deg > app.threshold) {
 		return 0;
 	}
 	return parseInt(((app.threshold-deg)/app.threshold)*100);

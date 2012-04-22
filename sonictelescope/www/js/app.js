@@ -78,9 +78,10 @@ var app = {
         var objectInView = app.findClosestObject(orientation);
         
         if (objectInView) { 
-            app.dom.object.text(objectInView.name);   
-            app.audio.play(objectInView); 
+            app.dom.object.text(objectInView.name);            
         }
+        
+        app.audio.updateAudioSpace();
     },
     
     /**

@@ -1,28 +1,28 @@
 app.audio = {
     
     init: function() {
-        /*var media1 = new Media('/audio/bbc.m4a'),
-            media2 = new Media('/audio/mimpossible.wav'),
-            media3 = new Media('/audio/cosmos201.mp3'),
-            media4 = new Media('/audio/oneplanet.mp3'),
-            media5 = new Media('/audio/swoon.mp3');
-
-        media1.play();    
-        setTimeout(function() { media2.play(); }, 5000);
-        setTimeout(function() { media3.play(); }, 10000);
-        setTimeout(function() { media4.play(); }, 15000);        
-        setTimeout(function() { media5.play(); }, 20000);
-        */
         
+        // Constant background audio
         Audio.preloadAudio('background', '/audio/background_loop_filtered.mp3', 1);        
         Audio.loop('background');
+    
         
+                
         Audio.preloadAudio('pulsar', '/audio/pulsar_vela.mp3', 1);        
         Audio.setVolume('pulsar', 0);
         Audio.loop('pulsar');
         
+        Audio.preloadAudio('moon', '/audio/moon.mp3', 1);
+        Audio.setVolume('moon', 0);
+        Audio.loop('moon');
+        
         //app.audio.fadeTo('cosmos', 0.6);
         //Audio.fadeTo('cosmos', 0.6);
+    },
+    
+    
+    updateAudioSpace: function() {
+        console.log('update space');
     },
     
     play: function(object) {
@@ -30,3 +30,10 @@ app.audio = {
     }
 }    
 
+
+
+// Audio test
+/*var pulsarVolume = degreesToRadians(beta);
+var moonVolume = degreesToRadians(Math.abs(gamma));        
+Audio.setVolume('pulsar', pulsarVolume);
+Audio.setVolume('moon', moonVolume);*/

@@ -124,6 +124,7 @@ var app = {
     /**
      * Convert coordinates from horizontal to equatorial coordinate system.
      * see http://en.wikipedia.org/wiki/Horizontal_coordinate_system
+     * returns Right Acension (degrees), declination (degrees)
      */
     convertHorizontalToEquatorial: function(latitude, longitude, altitude, azimuth) {  
         var sinD,  
@@ -237,11 +238,50 @@ var app = {
         dec2 = parseFloat(celestialCoords[1]);
         
         var distance = ra2 - ra1;
-        
+        console.log('distance', distance);
         var cosSep = (Math.sin(degreesToRadians(dec1)) * Math.sin(degreesToRadians(dec2))) +
         (Math.cos(degreesToRadians(dec1)) * Math.cos(degreesToRadians(dec2)) * Math.cos(degreesToRadians(distance)));
-        
+        console.log('cosSep', cosSep);
         return radiansToDegrees(Math.cos(cosSep));
+    },
+    
+    
+    /**
+     * 
+     *
+     */
+    getAngularSeparation2 : function(userCoords, celestialCoords) {
+    
+        var userCoordsEQ = this.convertHorizontalToEquatorial(app.userLocation.lat, app.userLocation.lon, userCoords[0], userCoords[1]),
+            celestialCoordsEQ = this.convertHorizontalToEquatorial(app.userLocation.lat, app.userLocation.lon, celestialCoords[0], celestialCoords[1]);
+
+        ra1 = parseFloat(userCoordsEQ[0]);
+        ra2 = parseFloat(celestialCoordsEQ[0]);
+        dec1 = parseFloat(userCoords[1]);
+        dec2 = parseFloat(celestialCoords[1]);
+
+    
+    	with (Math) {
+    		var cRA = degreesToRadians(ra1);
+    		var cDec = degreesToRadians(dec1);
+    		
+    		var gRA = degreesToRadians(ra2);
+    		var gDec = degreesToRadians(dec2);
+    		
+    		var dRA = cRA - gRA;
+    		var dDec = gDec - cDec;
+    		
+    		var cosC = (sin(gDec) * sin(cDec)) + (cos(gDec) * cos(cDec) * cos(gRA-cRA));
+    		var x = (cos(cDec) * sin(gRA-cRA)) / cosC;
+    		
+    		var y = ((cos(gDec)*sin(cDec)) - (sin(gDec)*cos(cDec)*cos(gRA-cRA)))/cosC;
+    		
+    		var r = Math.sqrt(x*x+y*y);
+    		
+    		console.log(r, radiansToDegrees(r));
+			return r;
+    	}
+    
     },
     
     //getDegrees: function(lat1, lon1, lat2, long2) {
@@ -288,20 +328,15 @@ function toRad(a) {
 PGLowLatencyAudio = {};
 
 var lat= 51;
-var lon = 0.9;
+app.userLocation.lat = lat;
+var lon = 0.1;
+app.userLocation.lon = lon;
 var altitude = 35.6;
 var azimuth = 331.9;
-var dha = app.convertHorizontalToEquatorial(lat, altitude, azimuth);
-console.log(app.convertHorizontalToEquatorial(lat, altitude, azimuth)); //        return [declination, HA];
 
-console.log(app.lst(lon));
-console.log(app.lst3(lon));
-while (1) {
-var gmstlmst = app.lst3(lon);
-var ra = dha[1] - gmstlmst[1];
-console.log(gmstlmst, ra);
-}
 
+console.log(app.getAngularSeparation([altitude, azimuth], [altitude, azimuth]));
+console.log('getAngularSeparation2', app.getAngularSeparation2([altitude, azimuth], [36.6, azimuth]));
 
 // Alias to PGLowLatencyAudio
 Audio = PGLowLatencyAudio;
